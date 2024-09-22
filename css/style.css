@@ -1,0 +1,31 @@
+/* customise setting */
+@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Pixelify+Sans:wght@400..700&display=swap');
+
+
+body{
+    font-family: "Nunito Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+}
+
+.poke-red{
+    background-color: #F24C4C!important;
+}
+
+.poke-pixelFont {
+    font-family: "Pixelify Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+    color: white;
+    font-size: 2rem;
+}
+
+.poke-mapbox {
+    min-height: 55vh;
+}
+
+
+/* CSS to override bootstrap */
