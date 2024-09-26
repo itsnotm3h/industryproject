@@ -3,7 +3,7 @@
 // 1. Get the user's location
 // 2. Set the map to their view
 // 3. What is the game format? the map will refresh every 3 sections. 
-
+// 4. Timer on the questions. 
 
 
 //get location:
@@ -15,7 +15,7 @@ function getLocation() {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(showPosition);
   } else { 
-    x.innerHTML = "Geolocation is not supported by this browser.";
+    console.log("Geolocation is not supported by this browser.");
   }
 }
 
@@ -23,11 +23,12 @@ function showPosition(position) {
 
   currentLongtitude = position.coords.longitude;
   currentLatitude = position.coords.latitude
+
+  console.log(currentLongtitude,currentLatitude)
 }
 
 
-
-var map = L.map('map').setView([51.505, -0.09], 13);
+var map = L.map('map').setView([currentLatitude, currentLongtitude], 12);
 
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
@@ -75,6 +76,7 @@ function app() {
 
   //Loading the data storyBoard.
   document.addEventListener("DOMContentLoaded", async function () {
+    getLocation();
       // storyBoard = await loadData();
       // loadStory();
       loadData();
@@ -85,7 +87,7 @@ function app() {
   })
 
   //Function for items that is on the webpage.
-  preparePage();
+  // preparePage();
 
 
 }
