@@ -134,6 +134,21 @@ function getLocation() {
     }
   }
 
+  var MyDemoClass = L.Marker.extend({
+
+    // A property with initial value = 42
+    myDemoProperty: 42,   
+
+    // A method 
+    myDemoMethod: function() { return this.myDemoProperty; }
+    
+});
+
+var myDemoInstance = new MyDemoClass();
+
+// This will output "42" to the development console
+console.log( myDemoInstance.myDemoMethod() );   
+
   
   //Load the map
   async function loadMap(lat,lng) {
@@ -152,42 +167,39 @@ function getLocation() {
 
     let imageURL= fullData[i].pokemonImage;
     let questionIndex= fullData[i].questionIndex;
+    // let question = mathQuestions[questionIndex].question;
     // console.log(imageURL);
-        
-    //   let circle = L.circle([lat + 0.02, lng], {
-    //     color: 'red',
-    //     fillColor: "orange",
-    //     fillOpacity: 0.5,
-    //     radius: 10,
-    //   })
-
 
     var customDivIcon = L.divIcon({
-        className: 'custom-marker', // Optional: Add a class for CSS styling
-        html: `<div class="marker-wrapper"><img src="${imageURL}" class="img-fluid"><div class="text-center timer w-100">Marker Content</div></div>`,
-        iconSize: [100, 100], // Size of the marker
+        html: `<div class="marker-wrapper"><img src="${imageURL}" class="img-fluid pokeIcon" data-questionid="${i+1}"><div class="text-center timer w-100">Marker Content</div></div>`,
+        iconSize: [100, 100],
+        className: "markerIndex-"+i
     });
 
-
-    // var pokemonIcon = L.Icon.extend({
-    //     options: {
-    //         iconSize:     [100, 100],
-    //         iconAnchor:   [22, 94],
-    //         shadowAnchor: [4, 62],
-    //         popupAnchor:  [-3, -76],
-    //         className: "markerIndex-"+i, // Add your custom class here
-    //     }
-    // });
-
-    // var placeIcon = new pokemonIcon({iconUrl: imageURL});
-
+    
   
       let extra = i * 0.0010;
       let pokemonMarker = L.marker([lat + extra, lng], {icon: customDivIcon});
       pokemonMarker.addTo(map);
 
-      pokemonMarker.addEventListener("click",function(){
-        alert("yes"+questionIndex);
+      pokemonMarker.addEventListener("click",function(e){
+        // alert("yes"+questionIndex);
+
+        // modalToggle = document.getElementById('myModal');
+        // myModal.show();
+
+        // let elementClass = e.dataset.questionid;
+        console.log(pokemonMarker._leaflet_id);
+
+        var questionModal = new bootstrap.Modal(document.getElementById('myModal'), {
+          keyboard: false
+        });
+        
+        document.querySelector(".modal-title").innerHTML = "Question:";
+        // document.querySelector(".modal-body").innerHTML = `<p>${question}</p>`;
+
+        questionModal.show();
+
       })
 
       // singaporeMarker.classList.add("new-class");

@@ -24,12 +24,18 @@ function app() {
 
   //loading presets and datas
 
-  document.addEventListener("DOMContentLoaded", function () {
+  document.addEventListener("DOMContentLoaded", async function () {
     // fullPokemon = await loadPokemon();
-    getLocation();
+    await getLocation();
     // console.log(fullData);
   })
   
+  
+
+  // document.querySelectorAll('.pokeIcon').addEventListener('click', (e) => {
+  //   console.log(e.target.dataset.questionid);
+  // })
+ 
   
   // loading().then(
   // alert("yes");
