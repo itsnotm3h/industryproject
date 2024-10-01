@@ -92,9 +92,6 @@ let mathQuestions = [
 };
 
 
-
-
-
 //detect the location.
 function getLocation() {
     if (navigator.geolocation) {
@@ -160,14 +157,14 @@ console.log( myDemoInstance.myDemoMethod() );
     }).addTo(map);
   
   
-    for (i = 0; i < questionLimit; i++) {
+    for (let i = 0; i < questionLimit; i++) {
     
     // it need to be await as we have to wait for Axios to load the image URL.
     await generateData();
 
     let imageURL= fullData[i].pokemonImage;
     let questionIndex= fullData[i].questionIndex;
-    // let question = mathQuestions[questionIndex].question;
+  
     // console.log(imageURL);
 
     var customDivIcon = L.divIcon({
@@ -176,27 +173,31 @@ console.log( myDemoInstance.myDemoMethod() );
         className: "markerIndex-"+i
     });
 
-    
+
   
       let extra = i * 0.0010;
       let pokemonMarker = L.marker([lat + extra, lng], {icon: customDivIcon});
       pokemonMarker.addTo(map);
 
       pokemonMarker.addEventListener("click",function(e){
+
+        //So that the question will only be loaded when the pokemon is clicked. 
+        let question = mathQuestions[questionIndex].question;
+
         // alert("yes"+questionIndex);
 
         // modalToggle = document.getElementById('myModal');
         // myModal.show();
 
-        // let elementClass = e.dataset.questionid;
-        console.log(pokemonMarker._leaflet_id);
+        let elementID = i;
+        console.log(elementID);
 
         var questionModal = new bootstrap.Modal(document.getElementById('myModal'), {
           keyboard: false
         });
         
         document.querySelector(".modal-title").innerHTML = "Question:";
-        // document.querySelector(".modal-body").innerHTML = `<p>${question}</p>`;
+        document.querySelector(".modal-body").innerHTML = `<p>${question}</p>`;
 
         questionModal.show();
 
