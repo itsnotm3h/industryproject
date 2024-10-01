@@ -168,7 +168,7 @@ console.log( myDemoInstance.myDemoMethod() );
     // console.log(imageURL);
 
     var customDivIcon = L.divIcon({
-        html: `<div class="marker-wrapper"><img src="${imageURL}" class="img-fluid pokeIcon" data-questionid="${i+1}"><div class="text-center timer w-100">Marker Content</div></div>`,
+        html: `<div class="marker-wrapper"><img src="${imageURL}" class="img-fluid pokeIcon"><div class="text-center timer w-100">Marker Content</div></div>`,
         iconSize: [100, 100],
         className: "markerIndex-"+i
     });
@@ -177,6 +177,7 @@ console.log( myDemoInstance.myDemoMethod() );
   
       let extra = i * 0.0010;
       let pokemonMarker = L.marker([lat + extra, lng], {icon: customDivIcon});
+      // let userAnswer = []; // to capture answer form user. [think if i want to capture this**************]
       pokemonMarker.addTo(map);
 
       pokemonMarker.addEventListener("click",function(e){
@@ -184,24 +185,27 @@ console.log( myDemoInstance.myDemoMethod() );
         //So that the question will only be loaded when the pokemon is clicked. 
         let question = mathQuestions[questionIndex].question;
 
-        // alert("yes"+questionIndex);
-
-        // modalToggle = document.getElementById('myModal');
-        // myModal.show();
-
-        let elementID = i;
-        console.log(elementID);
 
         var questionModal = new bootstrap.Modal(document.getElementById('myModal'), {
           keyboard: false
         });
         
         document.querySelector(".modal-title").innerHTML = "Question:";
-        document.querySelector(".modal-body").innerHTML = `<p>${question}</p>`;
+        document.querySelector(".question").innerHTML = `<p>${question}</p>`;
 
         questionModal.show();
 
+
+        let answer = mathQuestions[fullData[i].questionIndex].answer;
+        let userinput = document.querySelector(".answerInput").value;
+
+
+        // put a check answer function here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        
+
       })
+
+      
 
       // singaporeMarker.classList.add("new-class");
     //   circle.addTo(map);
