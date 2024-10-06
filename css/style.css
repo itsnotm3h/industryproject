@@ -27,5 +27,19 @@ body{
     min-height: 70vh;
 }
 
+.timer{
+    background-color: white;
+    border-radius: 5px;
+    font-family: "Nunito Sans", sans-serif;
+    font-weight: 800;
+    position:absolute;
+    bottom: 5px;
+    left:0;
+    right: 0;
+}
+
+.marker-wrapper{
+    position: relative;
+}
 
 /* CSS to override bootstrap */
