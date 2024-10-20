@@ -13,8 +13,7 @@
 
 </head>
 
-<body>
-
+<body class="poke-red">
   <div class="modal" id="myModal">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -36,14 +35,38 @@
     </div>
   </div>
 
-  <div class="container-fluid poke-red">
+  
+
+  <div class="container-fluid p-0">
     <div class="menu poke-pixelFont">
-      <p>This is the menu for it to look like pokedex.</p>
+      <nav class="navbar navbar-expand-lg p-0">
+        <div class="container-fluid p-0">
+          <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="#">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Collection</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Credit</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
     </div>
-    <div class="container mt-5 px-3 vh-100">
-      <div class="row vh-50">
-        <div class="col-md-8 col-lg-9 border poke-mapbox" id="map">Map</div>
-        <div class="col-md-4 col-lg-3 border questionList"></div>
+    <div class="container screenBorderWhite mt-5">
+      <div class="row vh-50 screenBorderGrey p-1">
+        <div class="col-md-8 col-lg-9 poke-mapbox" id="map">Map</div>
+        <div class="col-md-4 col-lg-3 questionList">
+          <div class="subHeader poke-pixelFont py-2">Catch them All!</div>
+          <div class="questionLog"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -55,9 +78,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.7/axios.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="js/map.js"></script>
-  <script src="js/new_data.js"></script>
-  <script src="js/main.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/script.js"></script>
 </body>
 
 </html>

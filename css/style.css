@@ -8,10 +8,52 @@ body{
     font-optical-sizing: auto;
     font-weight: 500;
     font-style: normal;
+    font-size: 19px;
+}
+
+.cleared{
+    pointer-events: none;
+}
+
+.deactive{
+    opacity: 0.5;
+    pointer-events: none;
 }
 
 .poke-red{
     background-color: #F24C4C!important;
+}
+
+.menu{
+    background-image: url("../img/header4.svg");
+    background-size: cover;
+    background-position: top left;
+    background-repeat: none;
+    height:10vh;
+}
+
+.nav-link{
+    color: white!important;
+
+}
+
+.subHeader{
+    color: white;
+    font-weight: 800;
+    font-size: 2rem;
+    text-align: center;
+    
+}
+
+.smallText{
+    font-size: 0.8rem;
+    vertical-align: middle;
+
+}
+
+.questionLog{
+    height: 100%;
+    background-color: #434343;
 }
 
 .poke-pixelFont {
@@ -19,12 +61,21 @@ body{
     font-optical-sizing: auto;
     font-weight: 500;
     font-style: normal;
-    color: white;
-    font-size: 2rem;
+    font-size: 1.5rem;
+    line-height: 1;
 }
 
-.poke-mapbox {
-    min-height: 70vh;
+.poke-mapbox,.questionList {
+    height: 60vh;
+}
+
+.questionLog{
+    overflow-x:hidden;
+    overflow-y:scroll;
+    height: 93%;
+}
+.pokedex-extension {
+    height: 20px;
 }
 
 .timer{
@@ -41,5 +92,71 @@ body{
 .marker-wrapper{
     position: relative;
 }
+.screenBorderGrey{
+    border: 0.5rem solid #5A555C;
+}
+
+.screenBorderWhite{
+    border-left: 1rem solid  #E7E7E7;
+    border-right: 1rem solid  #E7E7E7;
+    border-top: 1rem solid  #E7E7E7;
+    border-bottom: 2rem solid  #E7E7E7;
+    background-color: #5A555C;
+}
+.questionList{
+    background-color: #5A555C;
+}
+
+.questionIcon{
+    max-width: 40px;
+}
+
+.questionText{
+    flex-grow: 1;
+}
+.questionItem{
+    background-image: url("../img/question_banner.png");
+    background-size: contain;
+    background-position: top;
+    background-repeat: no-repeat;
+    background-color: #6695CB;
+    border-bottom: 0.3rem solid #9ABAD1;
+    line-height: 1.1;
+    color:white;
+}
 
 /* CSS to override bootstrap */
+
+/* // `sm` applies to x-small devices (portrait phones, less than 576px) */
+@media (max-width: 575.98px) { 
+
+ }
+
+/* // `md` applies to small devices (landscape phones, less than 768px) */
+@media (max-width: 767.98px) { 
+    .questionLog{
+        height: 70%;
+    }
+    .poke-mapbox{
+        height: 50vh;
+    }
+    .questionList {
+        height: 20vh;
+    }
+
+
+ }
+
+/* // `lg` applies to medium devices (tablets, less than 992px) */
+@media (max-width: 991.98px) { 
+
+ }
+
+/* // `xl` applies to large devices (desktops, less than 1200px) */
+@media (max-width: 1199.98px) { 
+
+ }
+
+/* // `xxl` applies to x-large devices (large desktops, less than 1400px) */
+@media (max-width: 1399.98px) {  
+}
