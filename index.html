@@ -35,13 +35,15 @@
     </div>
   </div>
 
-  
 
-  <div class="container-fluid p-0">
+
+
+  <div class="container-fluid p-0 position-relative">
     <div class="menu poke-pixelFont">
       <nav class="navbar navbar-expand-lg p-0">
         <div class="container-fluid p-0">
-          <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
@@ -60,15 +62,51 @@
         </div>
       </nav>
     </div>
-    <div class="container screenBorderWhite mt-5">
-      <div class="row vh-50 screenBorderGrey p-1">
-        <div class="col-md-8 col-lg-9 poke-mapbox" id="map">Map</div>
+    <div class="container screenBorderWhite mt-5 h-100">
+      <div class="row screenBorderGrey p-1">
+        <div class="col-md-8 col-lg-9 poke-mapbox position-relative">
+          <div class="h-100 w-100" id="map"></div>
+          <div class="hidden" id="gallery">
+            <div class="d-flex m-auto w-100 justify-content-center p-4" id="boxBanner">
+  
+  
+              <div id="prevBtn" class="me-2" type="button" data-bs-target="#carouselExample" data-bs-slide="prev"><img
+                  src="img/arrow.png" class="img-fluid" width="30px"></div>
+              <div id="bannerTitle" class="d-flex">
+                <div class="align-self-center w-100" id="boxName">BOX 1</div>
+              </div>
+              <div id="nextBtn" class="ms-2" type="button" data-bs-target="#carouselExample" data-bs-slide="next"><img
+                  src="img/arrow.png" class="img-fluid" width="30px"></div>
+            </div>
+            <div id="boxStage" class="m-auto p-2">
+              <div id="carouselExample" class="carousel slide">
+                <div class="carousel-inner">
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+
         <div class="col-md-4 col-lg-3 questionList">
           <div class="subHeader poke-pixelFont py-2">Catch them All!</div>
           <div class="questionLog"></div>
         </div>
       </div>
+
+      <div id="sideNavigation">
+        <div class="d-flex h-100 flex-wrap">
+        <div class="sideNav" id="galleryButton"></div>
+        <div class="sideNav"></div>
+        <div class="sideNav"></div>
+        <div class="sideNav"></div>
+      </div>
+      </div>
+
+
     </div>
+
   </div>
 
 

@@ -2,8 +2,11 @@ let POKEMONURL = "https://pokeapi.co/api/v2/pokemon/";
 let GEOJSON = "geojson/GreenMarkBuildingsGEOJSON.geojson";
 let questionLimit = 10;
 let timerSetting = [5, 6, 7, 8];
-let maxPokemon = 1025;
+// let timerSetting = [0.1, 0.1, 0.1, 0.1];
+
+let maxPokemon = 1024;
 let ignoreIndex = [];
+let result = [];
 let answer;
 let currentId;
 
@@ -100,7 +103,7 @@ async function loadPokemonLibrary(index) {
       return {
         id: response.data.id,
         name: response.data.name,
-        image: response.data.sprites.front_default
+        image: response.data.sprites.front_default,
       }
     }
     else {
@@ -131,17 +134,22 @@ async function loadAllPokemonData() {
     promises.push(
       loadPokemonLibrary(i).then(pokemonData => {
 
-        let pokemonId = pokemonData.id;
-        let pokemonName = pokemonData.name;
-        let pokemonImage = pokemonData.image;
-
-        fullPokemon.push({ pokemonId, pokemonName, pokemonImage });
-
+        if(pokemonData.id!="null" && pokemonData.name!="Unknown Pokémon" && pokemonData.image!="Unknown")
+        {
+          let pokemonId = pokemonData.id;
+          let pokemonName = pokemonData.name;
+          let pokemonImage = pokemonData.image;
+          fullPokemon.push({ pokemonId, pokemonName, pokemonImage });
+        }
       })
     )
+    
   }
 
   await Promise.all(promises);
+
+
+  
 }
 
 async function generateQuestion(x) {
@@ -211,10 +219,11 @@ function getLocation() {
   async function loadMap(lat, lng) {
   
     geoLibrary = await loadGeoLocation();
+
   
     map = L.map('map').setView([lat, lng], 16);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      minZoom:16,
+      minZoom:14,
       maxZoom: 16,
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
@@ -247,9 +256,7 @@ function getLocation() {
         markerArray.push(pokemonMarker);     
         let timer = document.querySelectorAll(".timer");
         // setInterval(startTime(miliSec,timer[eachMarker]),1000);
-        timerInterval = setInterval(() => {
-          setTimer(timer[eachMarker],eachMarker)
-      }, 1000);
+  
   
         pokemonMarker.addEventListener("click", function (e) {
   
@@ -263,26 +270,17 @@ function getLocation() {
         answer = mathQuestions[questionIndex].answer;
         currentId = eachMarker;
 
+        timerInterval = setInterval(() => {
+          setTimer(timer[eachMarker],eachMarker)
+      }, 1000);
+
         let showQuestion = document.querySelectorAll(".questionItem");
-        showQuestion[questionIndex].classList.remove("deactive");
+        showQuestion[questionIndex].classList.remove("deactivate");
   
       })
       }; 
   };
   
-  
-  function removeMarker(){
-  let allTimer = document.querySelectorAll(".timer");
-  
-    for(let t in allTimer)
-     {
-       if(allTimer[t].innerHTML == "0:00")
-       {
-        map.removeLayer(markerArray[t]);
-       }
-  
-     }
-   }
   
   
   function setTimer(timer,index) {
@@ -302,9 +300,10 @@ function getLocation() {
       timer.innerHTML = minutes + ":" + seconds;
       miliSec = miliSec - 1000;
       fullData[index].timer =  miliSec;
-    }
-    else{
-      removeMarker();
+      
+      if(miliSec == 0){
+        map.removeLayer(markerArray[index]);
+      }
     }
   }
 

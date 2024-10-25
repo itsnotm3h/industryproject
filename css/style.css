@@ -10,12 +10,14 @@ body{
     font-style: normal;
     font-size: 19px;
 }
-
+.hidden{
+    display: none;
+}
 .cleared{
     pointer-events: none;
 }
 
-.deactive{
+.deactivate{
     opacity: 0.5;
     pointer-events: none;
 }
@@ -47,7 +49,7 @@ body{
 
 .smallText{
     font-size: 0.8rem;
-    vertical-align: middle;
+    vertical-align: middle!important;
 
 }
 
@@ -65,7 +67,7 @@ body{
     line-height: 1;
 }
 
-.poke-mapbox,.questionList {
+.poke-mapbox,.questionList,.gallery {
     height: 60vh;
 }
 
@@ -113,6 +115,8 @@ body{
 
 .questionText{
     flex-grow: 1;
+    vertical-align: middle!important;
+
 }
 .questionItem{
     background-image: url("../img/question_banner.png");
@@ -125,6 +129,96 @@ body{
     color:white;
 }
 
+.questionItem.correct{
+    background-image: url("../img/question_correct.svg");
+    background-size: contain;
+    background-position: top;
+    background-repeat: no-repeat;
+    background-color: #76CC7D;
+    border-bottom: 0.3rem solid #6AB870;
+    line-height: 1.1;
+    color:white;
+}
+
+.questionItem.wrong{
+    background-image: url("../img/question_wrong.svg");
+    background-size: contain;
+    background-position: top;
+    background-repeat: no-repeat;
+    background-color: #CC2F2F;
+    border-bottom: 0.3rem solid #B82A2A;
+    line-height: 1.1;
+    color:white;
+}
+
+.status{
+    max-width: 60px;
+}
+
+#gallery{
+
+    background-color: #F9EA99;
+    position: relative;
+    height: 100%;
+}
+
+/* #boxBanner{
+    height: 80%;
+} */
+
+#bannerTitle{
+    background-color: #F3B182;
+    width: 50%;
+    text-align: center;
+    font-size: 80%;
+}
+
+#nextBtn img{
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+}
+
+#boxStage{
+    background-color:#FEFAE4;
+    height: 80%;
+    width: 95%;
+    border-radius: 20px;
+}
+
+.pokemonGallery{
+    width: calc(100%/10);
+    -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+    filter: grayscale(100%);
+}
+
+#boxName{
+    font-family: "Nunito Sans", sans-serif;
+    color:#434343;
+    font-weight: 900;
+    font-style: italic;
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+#sideNavigation{
+    background-color: #C52B2B;
+    border-radius: 20px;
+    width: 20px;
+    height: 80%;
+    position: absolute;
+    right:20px;
+    top:0;
+    bottom:0;
+    margin: auto;
+}
+
+.sideNav{
+    background-color: #F3B182;
+    width: 100%;
+    padding: 10px;
+    height: calc(100%/4);
+  
+}
 /* CSS to override bootstrap */
 
 /* // `sm` applies to x-small devices (portrait phones, less than 576px) */
@@ -140,8 +234,18 @@ body{
     .poke-mapbox{
         height: 50vh;
     }
+    #gallery{
+        height: 50vh;
+    }
     .questionList {
         height: 20vh;
+    }
+    #boxStage{
+        height: 75%;
+    }
+
+    .pokemonGallery{
+        width: calc(100%/10);
     }
 
 
