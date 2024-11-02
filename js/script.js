@@ -3,7 +3,7 @@ function loadPreset(questionArray) {
     for (let questionNo in questionArray) {
         let questionTab = document.querySelector(".questionLog");
         let questionIndex = parseInt(questionNo) + 1;
-        let difficulty = mathQuestions[questionNo].difficulty;
+        let difficulty = userQuestions[questionNo].difficulty;
         const questionContainer = document.createElement("div");
         questionContainer.dataset.questionId = questionNo;
         questionContainer.classList.add('col-12', 'p-1','m-1','mt-0', 'questionItem','deactivate','d-flex');
@@ -88,7 +88,7 @@ function app() {
     //loading presets and datas
     document.addEventListener("DOMContentLoaded", async function () {
 
-        mathQuestions = await loadQuestionData();
+        userQuestions = await loadQuestionData();
         await loadAllPokemonData();
         await generateQuestion(questionLimit);
         await getLocation(function (coords) {

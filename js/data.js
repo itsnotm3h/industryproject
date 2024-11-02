@@ -1,7 +1,7 @@
 let POKEMONURL = "https://pokeapi.co/api/v2/pokemon/";
 let GEOJSON = "geojson/GreenMarkBuildingsGEOJSON.geojson";
 const JSON_BIN_BASE_URL="https://api.jsonbin.io/v3";
-const JSON_BIN_ID  = "67259d10ad19ca34f8c28775";
+const JSON_BIN_ID  = "67263111acd3cb34a8a14d55";
 let questionLimit = 10;
 let timerSetting = [5, 6, 7, 8];
 // let timerSetting = [0.1, 0.1, 0.1, 0.1];
@@ -12,6 +12,14 @@ let result = [];
 let answer;
 let currentId;
 let collectPokemon=[];
+
+
+let fullData = [];
+let fullPokemon = [];
+let selectedQuestion = [];
+let userQuestions = [];
+
+let geoLibrary = [];
 
 //setting for modal
 var questionModal = new bootstrap.Modal(document.getElementById('myModal'), {
@@ -33,19 +41,11 @@ function getRandomIndex(min, max, ignore) {
   return calculate;
 };
 
-let fullData = [];
-let fullPokemon = [];
-let selectedQuestion = [];
-let mathQuestions = [];
-
-let geoLibrary = [];
 
 async function loadQuestionData (){
   let response = await axios.get(`${JSON_BIN_BASE_URL}/b/${JSON_BIN_ID}/latest`);
   return response.data.record;
 }
-
-
 
 async function loadGeoLocation() {
   let response = await axios.get(GEOJSON);
@@ -216,13 +216,13 @@ function getLocation() {
         pokemonMarker.addEventListener("click", function (e) {
   
         //So that the question will only be loaded when the pokemon is clicked. 
-        let question = mathQuestions[questionIndex].question;
+        let question = userQuestions[questionIndex].question;
   
         document.querySelector(".modal-title").innerHTML = "Question:";
         document.querySelector(".question").innerHTML = `<p>${question}</p>`;
   
         questionModal.show();
-        answer = mathQuestions[questionIndex].answer;
+        answer = userQuestions[questionIndex].answer;
         currentId = eachMarker;
 
         timerInterval = setInterval(() => {
