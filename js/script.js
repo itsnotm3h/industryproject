@@ -11,8 +11,7 @@ function loadPreset(questionArray) {
         let starHmtl = `<img src="img/star.svg" class="img-fluid" width="10px">`.repeat(difficulty);
 
 
-        questionContainer.innerHTML = `
-        <div class="p-2 pb-0 w-100 d-flex"  data-question-id="${questionIndex}">
+        questionContainer.innerHTML =`<div class="p-2 pb-0 w-100 d-flex"  data-question-id="${questionIndex}">
         <div class="questionIcon"><img src="img/normal.png" class="img-fluid pokemonIcon"></div>
         <div class="my-auto questionText ps-1"><div><b>Question ${questionIndex}</b></div><div class="w-100 d-flex align-items-stretch"><div class="smallText align-self-center">Level:${starHmtl}</div><div class="status ps-1"></div></div>
         </div>`;
@@ -37,7 +36,7 @@ function loadGallery(x){
 
     let total = x.length;
     let column = 10;
-    let row = 5;
+    let row = 4;
     let galleryStage = document.querySelector(".carousel-inner");
 
     for(let i=0; i < Math.ceil(total/(column*row)); i++)
@@ -53,7 +52,6 @@ function loadGallery(x){
         }
         else{
             slider.classList.add('carousel-item');
-
         }
 
         let startNum = i*(column*row);
@@ -62,16 +60,16 @@ function loadGallery(x){
         if(stopNum > 1024)
         {
             stopNum = 1024;
-
         }
 
 
     
         for(let j=startNum; j < stopNum; j++)
         {
-
             const pokmonCont = document.createElement("div");
-            pokmonCont.classList.add('pokemonGallery','align-self-stretch','deactivate');
+            pokmonCont.classList.add('pokemonGallery','flex-fill','deactivate');
+
+            pokmonCont.dataset.pokemonIndex = fullPokemon[j].pokemonId;
     
             pokmonCont.innerHTML = `<img src="${fullPokemon[j].pokemonImage}"  class="img-fluid" >`;
             wrapper.appendChild(pokmonCont);
@@ -87,10 +85,10 @@ function loadGallery(x){
 //To start the application for the website.
 function app() {
 
-
     //loading presets and datas
     document.addEventListener("DOMContentLoaded", async function () {
 
+        mathQuestions = await loadQuestionData();
         await loadAllPokemonData();
         await generateQuestion(questionLimit);
         await getLocation(function (coords) {
@@ -99,20 +97,10 @@ function app() {
             loadMap(sgLat, sgLng);
         });
 
-        // console.log(fullData);
-        // console.log(markerArray);
         console.log(fullPokemon);
-
-        // console.log(ignoreIndex);
-
         loadPreset(fullData);
         loadGallery(fullPokemon);
-
-
-        
-
     })
-
 
     // after all is load add in the function.
     let submitBtn = document.querySelector(".submitAnswer");
@@ -122,8 +110,8 @@ function app() {
     );
 
     document.querySelector("#galleryButton").addEventListener("click",function(){
-        document.querySelector("#map").classList.add("hidden");
-        document.querySelector("#gallery").classList.remove("hidden");
+        document.querySelector("#map").classList.toggle("hidden");
+        document.querySelector("#gallery").classList.toggle("hidden");
     })
 
     document.getElementById('carouselExample').addEventListener('slid.bs.carousel', function (event) {
@@ -145,20 +133,18 @@ function app() {
             questionStatus[currentId].innerHTML =`<img src="/img/correct-status.png" class="img-fluid">`;
             questionModal.hide();
         }
+
         else {
             console.log("Wrong Answer");
             questionItem[currentId].classList.remove("correct");
             questionItem[currentId].classList.add("wrong");
             pokemonIcon[currentId].src="/img/wrong.png";
             questionStatus[currentId].innerHTML =`<img src="/img/wrong-status.png" class="img-fluid">`;
-
             questionModal.hide();
-
         }
+        console.log(fullData[currentId].pokemonIndex)
     }
-
 }
-
 
 
 

@@ -1,5 +1,7 @@
 let POKEMONURL = "https://pokeapi.co/api/v2/pokemon/";
 let GEOJSON = "geojson/GreenMarkBuildingsGEOJSON.geojson";
+const JSON_BIN_BASE_URL="https://api.jsonbin.io/v3";
+const JSON_BIN_ID  = "67259d10ad19ca34f8c28775";
 let questionLimit = 10;
 let timerSetting = [5, 6, 7, 8];
 // let timerSetting = [0.1, 0.1, 0.1, 0.1];
@@ -9,6 +11,7 @@ let ignoreIndex = [];
 let result = [];
 let answer;
 let currentId;
+let collectPokemon=[];
 
 //setting for modal
 var questionModal = new bootstrap.Modal(document.getElementById('myModal'), {
@@ -25,7 +28,6 @@ function getRandomIndex(min, max, ignore) {
     while (check) {
       calculate = Math.floor(Math.random() * (max - min + 1)) + min;
     }
-
   }
 
   return calculate;
@@ -34,60 +36,15 @@ function getRandomIndex(min, max, ignore) {
 let fullData = [];
 let fullPokemon = [];
 let selectedQuestion = [];
-let mathQuestions = [
-  {
-    question: "What is 3/4 of 16?",
-    answer: 12,
-    difficulty:3
-  },
-  {
-    question: "If you have 5 apples and you buy 3 more, how many apples do you have in total?",
-    answer: 8,
-    difficulty:2
-  },
-  {
-    question: "A rectangle has a length of 10 cm and a width of 5 cm. What is the area?",
-    answer: 50,
-    difficulty:3
-  },
-  {
-    question: "What is 20% of 50?",
-    answer: 10,
-    difficulty:1
-  },
-  {
-    question: "If there are 12 students in a class and 3 are girls, what fraction of the class are boys?",
-    answer: "3/4",
-    difficulty:2
-  },
-  {
-    question: "What is the perimeter of a square with a side length of 6 cm?",
-    answer: 24,
-    difficulty:1
-  },
-  {
-    question: "What is the sum of 567 and 234?",
-    answer: 801,
-    difficulty:2
-  },
-  {
-    question: "If a toy costs $15 and you pay with a $20 note, how much change do you get?",
-    answer: 5,
-    difficulty:1
-  },
-  {
-    question: "How many days are there in 3 weeks?",
-    answer: 21,
-    difficulty:2
-  },
-  {
-    question: "What is the difference between 100 and 47?",
-    answer: 53,
-    difficulty:1
-  }
-]
+let mathQuestions = [];
 
 let geoLibrary = [];
+
+async function loadQuestionData (){
+  let response = await axios.get(`${JSON_BIN_BASE_URL}/b/${JSON_BIN_ID}/latest`);
+  return response.data.record;
+}
+
 
 
 async function loadGeoLocation() {
@@ -148,8 +105,6 @@ async function loadAllPokemonData() {
 
   await Promise.all(promises);
 
-
-  
 }
 
 async function generateQuestion(x) {
@@ -272,7 +227,7 @@ function getLocation() {
 
         timerInterval = setInterval(() => {
           setTimer(timer[eachMarker],eachMarker)
-      }, 1000);
+        }, 1000);
 
         let showQuestion = document.querySelectorAll(".questionItem");
         showQuestion[questionIndex].classList.remove("deactivate");
@@ -286,9 +241,11 @@ function getLocation() {
   function setTimer(timer,index) {
   
     let miliSec = fullData[index].timer;
+    let questionStatus = document.querySelectorAll(".status");
+    let pokemonIcon = document.querySelectorAll(".pokemonIcon"); 
+    let questionItem = document.querySelectorAll(".questionItem");
     
     if(miliSec >= 0) {
-  
       //how many milisecond in minutes ()
       var minutes = Math.floor(miliSec / 1000 / 60);
       var seconds = Math.floor(miliSec / 1000) % 60;
@@ -303,6 +260,9 @@ function getLocation() {
       
       if(miliSec == 0){
         map.removeLayer(markerArray[index]);
+        questionItem[currentId].classList.add("wrong");
+        pokemonIcon[index].src="/img/wrong.png";
+        questionStatus[index].innerHTML =`<img src="/img/wrong-status.png" class="img-fluid">`;
       }
     }
   }
