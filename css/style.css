@@ -46,9 +46,9 @@ body{
 .questionPanel{
     background-color: #e4e6e6;
     border-radius:20px;
-    min-height: 100px;
+    max-height: 70vh;
     border: 17px solid #e4e6e6;
-    overflow-x: auto;
+    overflow-y: scroll;
 }
 
 
@@ -268,6 +268,21 @@ table tr td, table tr th{
 .starSlider div{
     width: 20%;
 }
+
+.roundBtn{
+    background-color:#76CC7D;
+    color:white;
+    font-weight: 800!important;
+    border-radius: 25px;
+    font-family: "Nunito Sans", sans-serif!important;
+}
+
+.roundBtn:hover{
+    background-color:#61a767;   
+    color:white;
+
+}
+
 /* CSS to override bootstrap */
 
 /* // `sm` applies to x-small devices (portrait phones, less than 576px) */

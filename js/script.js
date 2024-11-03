@@ -123,15 +123,28 @@ function app() {
         let userinput = document.querySelector(".answerInput").value;
         let questionItem = document.querySelectorAll(".questionItem");
         let pokemonIcon = document.querySelectorAll(".pokemonIcon");
-        let questionStatus = document.querySelectorAll(".status")
+        let questionStatus = document.querySelectorAll(".status");
+
         if (userinput == answer) {
+
+            let noticeTab = document.querySelector(".noticeTab");
+            let questionTab = document.querySelector(".answerQuestionTab");
+            
             console.log("Answer Correct");
             map.removeLayer(markerArray[currentId]);
             questionItem[currentId].classList.remove("wrong");
             questionItem[currentId].classList.add("correct");
             pokemonIcon[currentId].src="/img/correct.png";
             questionStatus[currentId].innerHTML =`<img src="/img/correct-status.png" class="img-fluid">`;
-            questionModal.hide();
+
+            noticeTab.innerHTML=`<img src="./img/thumbsup.jpg" class="img-fluid>`;
+
+            noticeTab.classList.remove("hidden");
+
+
+
+
+            // questionModal.hide();
         }
 
         else {
@@ -140,7 +153,7 @@ function app() {
             questionItem[currentId].classList.add("wrong");
             pokemonIcon[currentId].src="/img/wrong.png";
             questionStatus[currentId].innerHTML =`<img src="/img/wrong-status.png" class="img-fluid">`;
-            questionModal.hide();
+            // questionModal.hide();
         }
         console.log(fullData[currentId].pokemonIndex)
     }
