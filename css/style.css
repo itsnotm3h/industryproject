@@ -212,6 +212,12 @@ body{
     filter: grayscale(100%);
 }
 
+
+.colured{
+    -webkit-filter: grayscale(0%)!important; /* Safari 6.0 - 9.0 */
+    filter: grayscale(0%)!important; 
+}
+
 #boxName{
     font-family: "Nunito Sans", sans-serif;
     color:#434343;

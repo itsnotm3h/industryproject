@@ -8,7 +8,7 @@ let timerSetting = [5, 6, 7, 8];
 
 let maxPokemon = 1024;
 let ignoreIndex = [];
-let result = [];
+let correct = [];
 let answer;
 let currentId;
 let collectPokemon=[];
@@ -20,6 +20,30 @@ let selectedQuestion = [];
 let userQuestions = [];
 
 let geoLibrary = [];
+
+//load all data from the pokemon api;
+async function loadAllPokemonData() {
+  const promises = [];
+
+  for (let i = 1; i < maxPokemon; i++) {
+    promises.push(
+      loadPokemonLibrary(i).then(pokemonData => {
+
+        if(pokemonData.id!="null" && pokemonData.name!="Unknown Pokémon" && pokemonData.image!="Unknown")
+        {
+          let pokemonId = pokemonData.id;
+          let pokemonName = pokemonData.name;
+          let pokemonImage = pokemonData.image;
+          fullPokemon.push({ pokemonId, pokemonName, pokemonImage });
+        }
+      })
+    )
+    
+  }
+
+  await Promise.all(promises);
+
+}
 
 //setting for modal
 var questionModal = new bootstrap.Modal(document.getElementById('myModal'), {
@@ -83,29 +107,7 @@ async function loadPokemonLibrary(index) {
 
 }
 
-//load all data from the pokemon api;
-async function loadAllPokemonData() {
-  const promises = [];
 
-  for (let i = 1; i < maxPokemon; i++) {
-    promises.push(
-      loadPokemonLibrary(i).then(pokemonData => {
-
-        if(pokemonData.id!="null" && pokemonData.name!="Unknown Pokémon" && pokemonData.image!="Unknown")
-        {
-          let pokemonId = pokemonData.id;
-          let pokemonName = pokemonData.name;
-          let pokemonImage = pokemonData.image;
-          fullPokemon.push({ pokemonId, pokemonName, pokemonImage });
-        }
-      })
-    )
-    
-  }
-
-  await Promise.all(promises);
-
-}
 
 async function generateQuestion(x) {
 
@@ -114,7 +116,7 @@ async function generateQuestion(x) {
 
   for (let i = 0; i < x; i++) {
     let pokemonIndex = getRandomIndex(0, 1025, ignoreIndex);
-    let questionIndex = i;
+    let questionIndex = userQuestions[i].id;
     let timer = (timerSetting[getRandomIndex(0, 3, "")]) * 60 * 1000;
     let pokemonImage = fullPokemon[pokemonIndex - 1].pokemonImage;
     coordinates = geoLibrary.features[getRandomIndex(1, 1025, "")].geometry.coordinates;
@@ -200,7 +202,7 @@ function getLocation() {
       
   
         let customDivIcon = L.divIcon({
-          html: `<div class="marker-wrapper"><img src="${imageURL}" class="img-fluid pokeIcon"><div class="text-center timer w-50 m-auto" data-question-id="${eachMarker}"></div></div>`,
+          html: `<div class="marker-wrapper"><img src="${imageURL}" class="img-fluid pokeIcon"><div class="text-center timer w-50 m-auto" data-question-id="${questionIndex}"></div></div>`,
           iconSize: [100, 100],
           zIndex: 1000,
           className: "markerIndex" 
@@ -214,15 +216,16 @@ function getLocation() {
   
   
         pokemonMarker.addEventListener("click", function (e) {
+
   
         //So that the question will only be loaded when the pokemon is clicked. 
-        let question = userQuestions[questionIndex].question;
+        let question = userQuestions[eachMarker].question;
   
         document.querySelector(".modal-title").innerHTML = "Question:";
         document.querySelector(".question").innerHTML = `<p>${question}</p>`;
   
         questionModal.show();
-        answer = userQuestions[questionIndex].answer;
+        answer = userQuestions[eachMarker].answer;
         currentId = eachMarker;
 
         timerInterval = setInterval(() => {
@@ -230,7 +233,7 @@ function getLocation() {
         }, 1000);
 
         let showQuestion = document.querySelectorAll(".questionItem");
-        showQuestion[questionIndex].classList.remove("deactivate");
+        showQuestion[eachMarker].classList.remove("deactivate");
   
       })
       }; 

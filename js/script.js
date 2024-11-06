@@ -2,7 +2,8 @@
 function loadPreset(questionArray) {
     for (let questionNo in questionArray) {
         let questionTab = document.querySelector(".questionLog");
-        let questionIndex = parseInt(questionNo) + 1;
+        let questionNum = parseInt(questionNo) + 1;
+        let questionID = userQuestions[questionNo].id;
         let difficulty = userQuestions[questionNo].difficulty;
         const questionContainer = document.createElement("div");
         questionContainer.dataset.questionId = questionNo;
@@ -11,9 +12,9 @@ function loadPreset(questionArray) {
         let starHmtl = `<img src="img/star.svg" class="img-fluid" width="10px">`.repeat(difficulty);
 
 
-        questionContainer.innerHTML =`<div class="p-2 pb-0 w-100 d-flex"  data-question-id="${questionIndex}">
+        questionContainer.innerHTML =`<div class="p-2 pb-0 w-100 d-flex"  data-question-id="${questionID}">
         <div class="questionIcon"><img src="img/normal.png" class="img-fluid pokemonIcon"></div>
-        <div class="my-auto questionText ps-1"><div><b>Question ${questionIndex}</b></div><div class="w-100 d-flex align-items-stretch"><div class="smallText align-self-center">Level:${starHmtl}</div><div class="status ps-1"></div></div>
+        <div class="my-auto questionText ps-1"><div><b>Question ${questionNum}</b></div><div class="w-100 d-flex align-items-stretch"><div class="smallText align-self-center">Level:${starHmtl}</div><div class="status ps-1"></div></div>
         </div>`;
         questionTab.appendChild(questionContainer);
 
@@ -30,6 +31,10 @@ function loadPreset(questionArray) {
     });
 
 }
+
+function loadLocalStorage(){
+
+};
 
 
 function loadGallery(x){
@@ -81,6 +86,32 @@ function loadGallery(x){
 
 }
 
+function detectGallery(x){
+
+    let allGallery = document.querySelectorAll(".pokemonGallery");
+
+    try{
+
+        for(let item in allGallery)
+            {
+                if(item.dataset.pokemonIndex == x)
+                {
+                    item.classList.remove("deactivate");
+                    console.log(x);
+                }
+            }
+        
+
+    }
+    catch(error)
+    {
+        console.log(error);
+    }
+
+
+    
+    
+}
 
 //To start the application for the website.
 function app() {
@@ -90,7 +121,7 @@ function app() {
 
         userQuestions = await loadQuestionData();
         await loadAllPokemonData();
-        await generateQuestion(questionLimit);
+        await generateQuestion(userQuestions.length);
         await getLocation(function (coords) {
             sgLat = coords[0];
             sgLng = coords[1];
@@ -100,6 +131,7 @@ function app() {
         console.log(fullPokemon);
         loadPreset(fullData);
         loadGallery(fullPokemon);
+        detectGallery(1);
     })
 
     // after all is load add in the function.
@@ -128,9 +160,7 @@ function app() {
         if (userinput == answer) {
 
             let noticeTab = document.querySelector(".noticeTab");
-            let questionTab = document.querySelector(".answerQuestionTab");
-            
-            console.log("Answer Correct");
+            // let questionTab = document.querySelector(".answerQuestionTab");
             map.removeLayer(markerArray[currentId]);
             questionItem[currentId].classList.remove("wrong");
             questionItem[currentId].classList.add("correct");
@@ -140,11 +170,20 @@ function app() {
             noticeTab.innerHTML=`<img src="./img/thumbsup.jpg" class="img-fluid>`;
 
             noticeTab.classList.remove("hidden");
+            let pokeIndex = fullData[currentId].pokemonIndex;
+            let questIndex = fullData[currentId].questionIndex;
 
+            // console.log(fullData);
 
+            correct.push({"questionId":questIndex,"pokemonID":pokeIndex});
+            console.log(correct);
 
+            let addPokemon = document.querySelector(`[data-pokemon-index="${pokeIndex}"]`);
 
-            // questionModal.hide();
+            addPokemon.classList.remove("deactivate");
+            addPokemon.classList.add("colured");
+
+            questionModal.hide();
         }
 
         else {
@@ -153,9 +192,8 @@ function app() {
             questionItem[currentId].classList.add("wrong");
             pokemonIcon[currentId].src="/img/wrong.png";
             questionStatus[currentId].innerHTML =`<img src="/img/wrong-status.png" class="img-fluid">`;
-            // questionModal.hide();
+            questionModal.hide();
         }
-        console.log(fullData[currentId].pokemonIndex)
     }
 }
 
