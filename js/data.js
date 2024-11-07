@@ -262,6 +262,7 @@ function getLocation() {
       fullData[index].timer =  miliSec;
       
       if(miliSec == 0){
+        // check id the answer is already in and correct/ esle put it as wrong. 
         map.removeLayer(markerArray[index]);
         questionItem[currentId].classList.add("wrong");
         pokemonIcon[index].src="/img/wrong.png";

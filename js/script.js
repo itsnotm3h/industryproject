@@ -176,6 +176,8 @@ function app() {
             // console.log(fullData);
 
             correct.push({"questionId":questIndex,"pokemonID":pokeIndex});
+
+            console.log(fullData[currentId]);
             console.log(correct);
 
             let addPokemon = document.querySelector(`[data-pokemon-index="${pokeIndex}"]`);

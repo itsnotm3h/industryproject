@@ -230,21 +230,42 @@ body{
 #sideNavigation{
     background-color: #C52B2B;
     border-radius: 20px;
-    width: 20px;
+    width: 30px;
     height: 80%;
     position: absolute;
-    right:20px;
+    right: 1%;
     top:0;
     bottom:0;
     margin: auto;
+    z-index: 100;
 }
 
+
 .sideNav{
-    background-color: #F3B182;
     width: 100%;
-    padding: 10px;
     height: calc(100%/4);
-  
+    position: relative;
+}
+
+.sideNavItem{
+    background-color: #F3B182;
+    width: 50%;
+    height: 80%;
+    position: absolute;
+    top:0;
+    right:8px;
+    bottom:0;
+    margin:auto;
+    transition-property: width;
+    transition-duration: 1s;
+}
+
+.sideNavItem:hover{
+    width: 200px;
+    right:8px;
+
+    
+
 }
 
 
