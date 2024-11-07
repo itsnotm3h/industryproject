@@ -5,14 +5,13 @@ let questionSelected = "";
 function submitFunction(status) {
 
     try {
-        let currentRecord = checkExist(questionSelected,status);
+        let currentRecord = checkExist(questionSelected, status);
 
-        if (status =="New")
-        {
-            currentRecord = userQuestions[userQuestions.length-1].id;
+        if (status == "New") {
+            currentRecord = userQuestions[userQuestions.length - 1].id;
         }
         if (currentRecord) {
-            if (status == "Edit" || status =="New") {
+            if (status == "Edit" || status == "New") {
                 document.querySelector(".answerSection").classList.add("was-validated");
 
                 let newQuestion = document.querySelector(".settingQuestion").value;
@@ -29,15 +28,13 @@ function submitFunction(status) {
                 }
                 if (newQuestion != "" && newAnswer != "") {
 
-                    if(status =="Edit")
-                    {
+                    if (status == "Edit") {
                         editQuestion(currentRecord, newQuestion, newAnswer, newLevel);
                     }
-                    else if(status=="New")
-                    {
-                        let newNum = parseInt(currentRecord.replace("Q",""))+1;
-                        let newId = `Q${newNum.toString().padStart(3,"0")}`                        ;
-                        addNewQuestion(newId,newQuestion,newAnswer,newLevel);
+                    else if (status == "New") {
+                        let newNum = parseInt(currentRecord.replace("Q", "")) + 1;
+                        let newId = `Q${newNum.toString().padStart(3, "0")}`;
+                        addNewQuestion(newId, newQuestion, newAnswer, newLevel);
                     }
                     questionModal.hide();
                     document.querySelector(".answerSection").classList.remove("was-validated");
@@ -181,9 +178,9 @@ function addNewQuestion(newId, newQuestion, newAnswer, newLevel) {
 
     const newEntry = {
         id: newId,
-        question:newQuestion,
-        answer:newAnswer,
-        difficulty:newLevel
+        question: newQuestion,
+        answer: newAnswer,
+        difficulty: newLevel
     }
 
     userQuestions.push(newEntry);
@@ -204,7 +201,7 @@ function deleteQuestion(object, record) {
 }
 
 //Check and return data accordingly. 
-function checkExist(theRecord,status) {
+function checkExist(theRecord, status) {
     //find to return item, some is to return true or false. 
     const checked = userQuestions.find(item => item.id === theRecord);
     console.log("checked");
@@ -244,8 +241,8 @@ function app() {
         document.querySelector(".deleteDisplay").classList.add("hidden");
 
         editStatus = "New";
-        document.querySelector(".settingQuestion").value="";
-        document.querySelector(".settingAnswer").value=""
+        document.querySelector(".settingQuestion").value = "";
+        document.querySelector(".settingAnswer").value = ""
         document.querySelector(".settingLevel").value = 1;
         document.querySelector(".modal-title").innerHTML = `<b>${editStatus} Question</b>`;
 

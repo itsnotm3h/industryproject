@@ -228,10 +228,8 @@ body{
 }
 
 #sideNavigation{
-    background-color: #C52B2B;
-    border-radius: 20px;
     width: 30px;
-    height: 80%;
+    height: 100%;
     position: absolute;
     right: 1%;
     top:0;
@@ -240,10 +238,21 @@ body{
     z-index: 100;
 }
 
+.navTry{
+    height: 60%;
+    position: relative;
+}
+
+.sidebar{
+    margin: auto;
+    height: 50%;
+    width: 30px;
+    background-color: #C52B2B;
+    border-radius: 20px;    
+}
 
 .sideNav{
     width: 100%;
-    height: calc(100%/4);
     position: relative;
 }
 

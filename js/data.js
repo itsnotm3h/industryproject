@@ -8,13 +8,17 @@ let timerSetting = [5, 6, 7, 8];
 
 let maxPokemon = 1024;
 let ignoreIndex = [];
-let correct = [];
+let userAnswer = [];
 let answer;
 let currentId;
 let collectPokemon=[];
 
+let localProgress = JSON.parse(localStorage.getItem("progress"));
+let localAnswer = JSON.parse(localStorage.getItem("userAnswer"));
+let localGallery = JSON.parse(localStorage.getItem('userCollection'));
+let localQuestion = JSON.parse(localStorage.getItem('userQuestion'));
 
-let fullData = [];
+let userGeneratedData = [];
 let fullPokemon = [];
 let selectedQuestion = [];
 let userQuestions = [];
@@ -120,7 +124,7 @@ async function generateQuestion(x) {
     let timer = (timerSetting[getRandomIndex(0, 3, "")]) * 60 * 1000;
     let pokemonImage = fullPokemon[pokemonIndex - 1].pokemonImage;
     coordinates = geoLibrary.features[getRandomIndex(1, 1025, "")].geometry.coordinates;
-    fullData.push({ pokemonIndex, pokemonImage, questionIndex, timer, coordinates });
+    userGeneratedData.push({ pokemonIndex, pokemonImage, questionIndex, timer, coordinates,status:"" });
   }
 }
 
@@ -185,19 +189,20 @@ function getLocation() {
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
   
-    fullData[0].coordinates[1] = lat;
-    fullData[0].coordinates[0] = lng;
+    userGeneratedData[0].coordinates[1] = lat;
+    userGeneratedData[0].coordinates[0] = lng;
   
   
     //generate marker here. 
-    for (let eachMarker in fullData)
+    for (let eachMarker in userGeneratedData)
       {
-        let imageURL = fullData[eachMarker].pokemonImage;
-        let questionIndex = fullData[eachMarker].questionIndex;
+        let currentStatus = userGeneratedData[eachMarker].status;
+        let imageURL = userGeneratedData[eachMarker].pokemonImage;
+        let questionIndex = userGeneratedData[eachMarker].questionIndex;
         
         // to not that the coordinate is [lng,lat,0]
-        let newlat = fullData[eachMarker].coordinates[1];
-        let newlng = fullData[eachMarker].coordinates[0];
+        let newlat = userGeneratedData[eachMarker].coordinates[1];
+        let newlng = userGeneratedData[eachMarker].coordinates[0];
   
       
   
@@ -243,10 +248,12 @@ function getLocation() {
   
   function setTimer(timer,index) {
   
-    let miliSec = fullData[index].timer;
+    let miliSec = userGeneratedData[index].timer;
     let questionStatus = document.querySelectorAll(".status");
     let pokemonIcon = document.querySelectorAll(".pokemonIcon"); 
     let questionItem = document.querySelectorAll(".questionItem");
+    let questIndex = userGeneratedData[index].questionIndex;
+
     
     if(miliSec >= 0) {
       //how many milisecond in minutes ()
@@ -259,7 +266,7 @@ function getLocation() {
       // console.log(thisTimer);
       timer.innerHTML = minutes + ":" + seconds;
       miliSec = miliSec - 1000;
-      fullData[index].timer =  miliSec;
+      userGeneratedData[index].timer =  miliSec;
       
       if(miliSec == 0){
         // check id the answer is already in and correct/ esle put it as wrong. 
@@ -267,6 +274,10 @@ function getLocation() {
         questionItem[currentId].classList.add("wrong");
         pokemonIcon[index].src="/img/wrong.png";
         questionStatus[index].innerHTML =`<img src="/img/wrong-status.png" class="img-fluid">`;
+
+        let questionbtn = document.querySelector(`.questionLog [data-question-id="${questIndex}"]`);
+
+        questionbtn.removeEventListener("click", setMarkerClick);
       }
     }
   }
