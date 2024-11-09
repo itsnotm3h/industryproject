@@ -303,8 +303,8 @@ function getLocation() {
       // check id the answer is already in and correct/ esle put it as wrong. 
       map.removeLayer(markerArray[index]);
       questionItem[currentId].classList.add("wrong");
-      pokemonIcon[index].src="/img/wrong.png";
-      questionStatus[index].innerHTML =`<img src="/img/wrong-status.png" class="img-fluid">`;
+      pokemonIcon[index].src="./img/wrong.png";
+      questionStatus[index].innerHTML =`<img src="./img/wrong-status.png" class="img-fluid">`;
 
       let questionbtn = document.querySelector(`.questionLog [data-question-id="${questIndex}"]`);
 
