@@ -257,7 +257,6 @@ body{
 }
 
 .sideNavItem{
-    background-color: #F3B182;
     width: 50%;
     height: 80%;
     position: absolute;
@@ -269,12 +268,44 @@ body{
     transition-duration: 1s;
 }
 
-.sideNavItem:hover{
-    width: 200px;
+.sideNavItem img{
+    opacity: 0;
+    transition-property: opacity;
+    height: 100%;
+    transition-duration: 1s;
+}
+.sideNavItem.yellow{
+    background-color: #f1cd5f;
+}
+.sideNavItem.pink{
+    background-color: rgb(244, 182, 183,1);
+}
+
+.sideNavItem.purple{
+    background-color: rgb(215, 191, 235,1);
+}
+
+.sideNavItem.orange{
+    background-color: #f3b182;
+}
+
+.sideNavItem img:hover{
+    opacity: 1;
+}
+
+.sideNavItem.pink:hover{
+    width: 230px;
     right:8px;
+}
 
-    
 
+
+
+.sideNavItem:hover{
+    /* background-color: rgb(244, 182, 183,0); */
+    /* background-color:none!important; */
+    width: 200px;
+    right:8px; 
 }
 
 

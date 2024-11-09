@@ -76,8 +76,10 @@ function loadLocalStorage() {
 
     localProgress = JSON.parse(localStorage.getItem("progress"));
     localAnswer = JSON.parse(localStorage.getItem("userAnswer"));
-    localGallery = JSON.parse(localStorage.getItem('userCollection'));
+    localGallery = JSON.parse(localStorage.getItem('userPokemon'));
     localQuestion = JSON.parse(localStorage.getItem("userQuestion"));
+
+
 
 
     if (localProgress == null || localAnswer == null) 
@@ -101,6 +103,7 @@ function saveLocalStorage() {
     localStorage.setItem("userQuestion", JSON.stringify(userQuestions));
 
 }
+
 
 
 function loadGallery(x) {
@@ -166,11 +169,24 @@ function detectGallery(x) {
     catch (error) {
         console.log(error);
     }
+}
+
+function showSavedGallery(x){
+    let allGallery = document.querySelectorAll(".pokemonGallery");
+
+    for (let pokemon in x)
+    {
+        let pokeId = x[pokemon];
+        let addPokemon = document.querySelector(`[data-pokemon-index="${pokeId}"]`);
 
 
+        addPokemon.classList.remove("deactivate");
+        addPokemon.classList.add("colured");
 
+    }
 
 }
+
 
 //To start the application for the website.
 function app() {
@@ -214,6 +230,7 @@ function app() {
             loadGallery(fullPokemon);
             loadPreset(localProgress);
         }
+        
 
     })
 
@@ -225,14 +242,27 @@ function app() {
     );
 
     document.querySelector("#galleryButton").addEventListener("click", function () {
-        document.querySelector("#map").classList.toggle("hidden");
-        document.querySelector("#gallery").classList.toggle("hidden");
+        showSavedGallery(localGallery);
+        document.querySelector("#map").classList.add("hidden");
+        document.querySelector("#gallery").classList.remove("hidden");
+    })
+
+    document.querySelector("#homeButton").addEventListener("click",function(){
+        document.querySelector("#map").classList.remove("hidden");
+        document.querySelector("#gallery").classList.add("hidden");
+    });
+
+    document.querySelector("#saveButton").addEventListener("click", function () {
+        saveLocalStorage();
+        alert("You have saved.");
     })
 
     document.getElementById('carouselExample').addEventListener('slid.bs.carousel', function (event) {
         const slideNumber = event.to + 1; // `event.to` gives the zero-based index
         document.querySelector("#boxName").innerHTML = `BOX ${slideNumber}`;
     });
+
+
 
     function checkAnswer(answer) {
         let userinput = document.querySelector(".answerInput").value;
@@ -297,9 +327,6 @@ function app() {
 
             questionModal.hide();
         }
-
-        saveLocalStorage();
-
     }
 }
 

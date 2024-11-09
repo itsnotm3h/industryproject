@@ -15,7 +15,7 @@ let collectPokemon=[];
 
 let localProgress = JSON.parse(localStorage.getItem("progress"));
 let localAnswer = JSON.parse(localStorage.getItem("userAnswer"));
-let localGallery = JSON.parse(localStorage.getItem('userCollection'));
+let localGallery = JSON.parse(localStorage.getItem('userPokemon'));
 let localQuestion = JSON.parse(localStorage.getItem('userQuestion'));
 
 let userGeneratedData = [];
@@ -119,7 +119,14 @@ async function generateQuestion(x) {
   geoLibrary = await loadGeoLocation();
 
   for (let i = 0; i < x; i++) {
+
     let pokemonIndex = getRandomIndex(0, 1025, ignoreIndex);
+
+    if (i == 0)
+    {
+      pokemonIndex = 1;
+    }
+
     let questionIndex = userQuestions[i].id;
     let timer = (timerSetting[getRandomIndex(0, 3, "")]) * 60 * 1000;
     let pokemonImage = fullPokemon[pokemonIndex - 1].pokemonImage;
@@ -221,8 +228,6 @@ function getLocation() {
   
   
         pokemonMarker.addEventListener("click", function (e) {
-
-  
         //So that the question will only be loaded when the pokemon is clicked. 
         let question = userQuestions[eachMarker].question;
   
@@ -242,7 +247,34 @@ function getLocation() {
   
       })
       }; 
+
+      removeCorrect(userGeneratedData);
+
   };
+
+  function removeCorrect (x){
+    //get the index of the question
+
+    for(let item in x)
+    {
+      if(x[item].status == "correct")
+      {
+        map.removeLayer(markerArray[item]);
+
+        let questIndex = x[item].questionIndex;
+        let questionbtn = document.querySelector(`.questionLog [data-question-id="${questIndex}"]`);
+
+        questionbtn.removeEventListener("click", setMarkerClick);
+      }
+    }
+    
+
+    //remove marker base on index.
+
+
+    
+
+  }
   
   
   
@@ -267,18 +299,20 @@ function getLocation() {
       timer.innerHTML = minutes + ":" + seconds;
       miliSec = miliSec - 1000;
       userGeneratedData[index].timer =  miliSec;
-      
-      if(miliSec == 0){
-        // check id the answer is already in and correct/ esle put it as wrong. 
-        map.removeLayer(markerArray[index]);
-        questionItem[currentId].classList.add("wrong");
-        pokemonIcon[index].src="/img/wrong.png";
-        questionStatus[index].innerHTML =`<img src="/img/wrong-status.png" class="img-fluid">`;
 
-        let questionbtn = document.querySelector(`.questionLog [data-question-id="${questIndex}"]`);
+    }
 
-        questionbtn.removeEventListener("click", setMarkerClick);
-      }
+          
+    else if(miliSec == 0){
+      // check id the answer is already in and correct/ esle put it as wrong. 
+      map.removeLayer(markerArray[index]);
+      questionItem[currentId].classList.add("wrong");
+      pokemonIcon[index].src="/img/wrong.png";
+      questionStatus[index].innerHTML =`<img src="/img/wrong-status.png" class="img-fluid">`;
+
+      let questionbtn = document.querySelector(`.questionLog [data-question-id="${questIndex}"]`);
+
+      questionbtn.removeEventListener("click", setMarkerClick);
     }
   }
 
