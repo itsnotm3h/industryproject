@@ -315,7 +315,7 @@ function app() {
             questionItem[currentId].classList.remove("wrong");
             questionItem[currentId].classList.add("correct");
             pokemonIcon[currentId].src = "./img/correct.png";
-            questionStatus[currentId].innerHTML = `<img src="/img/correct-status.png" class="img-fluid">`;
+            questionStatus[currentId].innerHTML = `<img src="./img/correct-status.png" class="img-fluid">`;
 
             noticeTab.innerHTML = `<img src="./img/thumbsup.jpg" class="img-fluid>`;
 
@@ -354,7 +354,7 @@ function app() {
             questionItem[currentId].classList.remove("correct");
             questionItem[currentId].classList.add("wrong");
             pokemonIcon[currentId].src = "./img/wrong.png";
-            questionStatus[currentId].innerHTML = `<img src="/img/wrong-status.png" class="img-fluid">`;
+            questionStatus[currentId].innerHTML = `<img src="./img/wrong-status.png" class="img-fluid">`;
 
             userGeneratedData[currentId].status = "wrong";
 
