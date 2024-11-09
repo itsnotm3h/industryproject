@@ -353,13 +353,10 @@ table tr td, table tr th{
 /* // `sm` applies to x-small devices (portrait phones, less than 576px) */
 @media (max-width: 575.98px) { 
 
-    .sideNavItem{
-        right:0px;
-    }
 
     #sideNavigation{
         width: 20px;
-        right: 1%;
+        right: 0%;
         z-index: 100!important;
     }
 
