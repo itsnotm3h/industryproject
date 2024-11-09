@@ -249,6 +249,7 @@ body{
     width: 30px;
     background-color: #C52B2B;
     border-radius: 20px;    
+    z-index: 1000 !important;
 }
 
 .sideNav{
@@ -297,9 +298,6 @@ body{
     width: 230px;
     right:8px;
 }
-
-
-
 
 .sideNavItem:hover{
     /* background-color: rgb(244, 182, 183,0); */
@@ -355,7 +353,15 @@ table tr td, table tr th{
 /* // `sm` applies to x-small devices (portrait phones, less than 576px) */
 @media (max-width: 575.98px) { 
 
+    .sideNavItem{
+        right:0px;
+    }
 
+    #sideNavigation{
+        width: 20px;
+        right: 1%;
+        z-index: 100!important;
+    }
 
  }
 

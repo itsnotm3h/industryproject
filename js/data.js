@@ -11,6 +11,7 @@ let ignoreIndex = [];
 let userAnswer = [];
 let answer;
 let currentId;
+let currentQuestionId;
 let collectPokemon=[];
 
 let localProgress = JSON.parse(localStorage.getItem("progress"));
@@ -124,7 +125,7 @@ async function generateQuestion(x) {
 
     if (i == 0)
     {
-      pokemonIndex = 1;
+      pokemonIndex = 25;
     }
 
     let questionIndex = userQuestions[i].id;
@@ -237,6 +238,7 @@ function getLocation() {
         questionModal.show();
         answer = userQuestions[eachMarker].answer;
         currentId = eachMarker;
+        currentQuestionId = userQuestions[eachMarker].questionIndex;
 
         timerInterval = setInterval(() => {
           setTimer(timer[eachMarker],eachMarker)
@@ -296,19 +298,22 @@ function getLocation() {
       miliSec = miliSec - 1000;
       userGeneratedData[index].timer =  miliSec;
 
-    }
+      if(miliSec == 0){
+        // check id the answer is already in and correct/ esle put it as wrong. 
+        map.removeLayer(markerArray[index]);
+        questionItem[currentId].classList.add("wrong");
+        pokemonIcon[index].src="./img/wrong.png";
+        questionStatus[index].innerHTML =`<img src="./img/wrong-status.png" class="img-fluid">`;
+  
+        let questionbtn = document.querySelector(`.questionLog [data-question-id="${questIndex}"]`);
+  
+        questionbtn.removeEventListener("click", setMarkerClick);
+        userAnswer.push({ "questionId": userGeneratedData[currentId].questionIndex, "pokemonID": userGeneratedData[currentId].pokemonIndex, answer:"blank", status: "wrong" });
+        questionbtn.removeEventListener("click", setMarkerClick);
 
-          
-    else if(miliSec == 0){
-      // check id the answer is already in and correct/ esle put it as wrong. 
-      map.removeLayer(markerArray[index]);
-      questionItem[currentId].classList.add("wrong");
-      pokemonIcon[index].src="./img/wrong.png";
-      questionStatus[index].innerHTML =`<img src="./img/wrong-status.png" class="img-fluid">`;
+        console.log(userAnswer);
 
-      let questionbtn = document.querySelector(`.questionLog [data-question-id="${questIndex}"]`);
-
-      questionbtn.removeEventListener("click", setMarkerClick);
+      }
     }
   }
 
