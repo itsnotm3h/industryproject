@@ -270,10 +270,6 @@ function getLocation() {
     
 
     //remove marker base on index.
-
-
-    
-
   }
   
   

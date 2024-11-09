@@ -39,6 +39,29 @@
   </div>
 
 
+  <div class="modal" id="notification">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">New Questions Detected!</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+        <div class="answerQuestionTab">
+          <div class="question">Do you wish to proceed to refresh the question? You will lose your progress so far.</div>
+        </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary submitYes">Yes</button>
+          <button type="button" class="btn btn-primary danger submitNo">No</button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
 
 
   <div class="container-fluid p-0 position-relative">
@@ -110,7 +133,7 @@
     <div class="d-flex flex-wrap sidebar m-auto">
     <div class="sideNav"><div class="sideNavItem yellow" id="homeButton"><img src="./img/gameBtn.png" class="img-fluid"></div></div>
     <div class="sideNav"><div class="sideNavItem pink" id="galleryButton"><img src="./img/galleryBtn.png" class="img-fluid"></div></div>
-    <div class="sideNav"><div class="sideNavItem purple" id="questionButton"><a href="questions.html"><img src="./img/quizBtn.png" class="img-fluid"></a></div></div>
+    <div class="sideNav"><div class="sideNavItem purple" id="questionButton"><a href="questions.html" target="_blank"><img src="./img/quizBtn.png" class="img-fluid"></a></div></div>
     <div class="sideNav"><div class="sideNavItem orange" id="saveButton"><img src="./img/saveBtn.png" class="img-fluid"></div></div>
   </div>
   </div>

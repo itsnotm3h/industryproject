@@ -11,14 +11,12 @@ function loadPreset(questionArray) {
 
         questionContainer.classList.add('col-12', 'p-1', 'm-1', 'mt-0', 'questionItem', 'd-flex');
 
-        let imgURl ="normal";
-        if(progressStatus =="")
-        {
+        let imgURl = "normal";
+        if (progressStatus == "") {
             questionContainer.classList.add('deactivate');
         }
 
-        if(progressStatus =="correct" || progressStatus =="wrong")
-        {
+        if (progressStatus == "correct" || progressStatus == "wrong") {
             imgURl = progressStatus;
             questionContainer.classList.add(`${progressStatus}`);
         }
@@ -52,17 +50,17 @@ function loadPreset(questionArray) {
 }
 
 
-function showQuestion(x,index){
+function showQuestion(x, index) {
 
-  
-        let question = userQuestions[index].question;
-  
-        document.querySelector(".modal-title").innerHTML = "Question:";
-        document.querySelector(".answerLabel").innerHTML = "Your Anwser";
-        document.querySelector(".question").innerHTML = `<p>${question}</p>`;
-  
-        answer = userAnswer[index].answer;
-        questionModal.show();
+
+    let question = userQuestions[index].question;
+
+    document.querySelector(".modal-title").innerHTML = "Question:";
+    document.querySelector(".answerLabel").innerHTML = "Your Anwser";
+    document.querySelector(".question").innerHTML = `<p>${question}</p>`;
+
+    answer = userAnswer[index].answer;
+    questionModal.show();
 
 }
 
@@ -73,22 +71,18 @@ function setMarkerClick(x, index) {
 
 function loadLocalStorage() {
     // set questionProgress,userAnswer;
-
     localProgress = JSON.parse(localStorage.getItem("progress"));
     localAnswer = JSON.parse(localStorage.getItem("userAnswer"));
     localGallery = JSON.parse(localStorage.getItem('userPokemon'));
     localQuestion = JSON.parse(localStorage.getItem("userQuestion"));
 
 
-
-
-    if (localProgress == null || localAnswer == null) 
-        {
-            return false
-        }
-        else{
-            return true
-        }
+    if (localProgress == null || localAnswer == null) {
+        return false
+    }
+    else {
+        return true
+    }
 
 
 
@@ -171,11 +165,9 @@ function detectGallery(x) {
     }
 }
 
-function showSavedGallery(x){
-    let allGallery = document.querySelectorAll(".pokemonGallery");
+function showSavedGallery(x) {
 
-    for (let pokemon in x)
-    {
+    for (let pokemon in x) {
         let pokeId = x[pokemon];
         let addPokemon = document.querySelector(`[data-pokemon-index="${pokeId}"]`);
 
@@ -188,13 +180,20 @@ function showSavedGallery(x){
 }
 
 
+
+
+
+
 //To start the application for the website.
 function app() {
+ //true
+
 
     //loading presets and datas
     document.addEventListener("DOMContentLoaded", async function () {
 
 
+        userQuestions = await loadQuestionData();
 
         // console.log(fullPokemon);
 
@@ -202,7 +201,6 @@ function app() {
         console.log(local);
 
         if (!local) {
-            userQuestions = await loadQuestionData();
             await loadAllPokemonData();
             await generateQuestion(userQuestions.length);
             await getLocation(function (coords) {
@@ -216,8 +214,45 @@ function app() {
         }
 
         else {
-            console.log("its works")
+            // console.log("its works")
             await loadAllPokemonData();
+
+            let checkQuestion = JSON.stringify(userQuestions) === JSON.stringify(localQuestion);
+
+
+
+            var notificationModal = new bootstrap.Modal(document.getElementById('notification'), {
+                keyboard: false
+              });
+
+
+            if(!checkQuestion)
+            {
+
+                  notificationModal.show();
+
+
+                  document.querySelector(".submitYes").addEventListener("click",function(){
+
+                    localStorage.removeItem("progress");
+                    localStorage.removeItem("userAnswer");
+                    localStorage.removeItem("userQuestion");
+
+
+                location.reload();
+
+                  })
+
+
+                  document.querySelector(".submitNo").addEventListener("click",function(){
+                    notificationModal.hide();
+
+                  })
+
+
+            
+            }
+
             userQuestions = localQuestion;
             userGeneratedData = localProgress;
 
@@ -229,8 +264,10 @@ function app() {
 
             loadGallery(fullPokemon);
             loadPreset(localProgress);
+
+          
         }
-        
+
 
     })
 
@@ -247,7 +284,7 @@ function app() {
         document.querySelector("#gallery").classList.remove("hidden");
     })
 
-    document.querySelector("#homeButton").addEventListener("click",function(){
+    document.querySelector("#homeButton").addEventListener("click", function () {
         document.querySelector("#map").classList.remove("hidden");
         document.querySelector("#gallery").classList.add("hidden");
     });
