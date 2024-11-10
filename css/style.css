@@ -350,9 +350,32 @@ table tr td, table tr th{
 
 .indicator{    
     position: absolute;
-    transform: rotate(-90deg);
-    width: 10px;
-    height: 10px;
+    top:0;
+    right:0;
+    left: 0;
+    margin: auto;
+    width: 20px;
+    height: 20px;
+    animation: float 2s ease-in-out infinite;
+}
+
+
+@keyframes float {
+    0% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+
+.currentQuestion{
+    border: 3px solid #f1cd5f!important;
 }
 
 /* CSS to override bootstrap */

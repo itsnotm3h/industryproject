@@ -24,7 +24,7 @@ function loadPreset(questionArray) {
         let starHmtl = `<img src="img/star.svg" class="img-fluid" width="10px">`.repeat(difficulty);
 
 
-        questionContainer.innerHTML = `<div class="p-2 pb-0 w-100 d-flex"  data-question-id="${questionID}">
+        questionContainer.innerHTML = `<div class="p-2 pb-0 w-100 d-flex"  data-questionitem-id="${questionID}">
         <div class="questionIcon"><img src="img/${imgURl}.png" class="img-fluid pokemonIcon"></div>
         <div class="my-auto questionText ps-1"><div><b>Question ${questionNum}</b></div><div class="w-100 d-flex align-items-stretch"><div class="smallText align-self-center">Level:${starHmtl}</div><div class="status ps-1"></div></div>
         </div>`;
@@ -50,6 +50,11 @@ function loadPreset(questionArray) {
 }
 
 
+function scrollQuestion(questionIndex){
+    let scrollItem = document.querySelector(`[data-questionitem-id="${questionIndex}"`)
+    scrollItem.scrollIntoView({behavior: 'smooth',block: "start" }, true);
+}
+
 function showQuestion(x, index) {
 
 
@@ -65,8 +70,13 @@ function showQuestion(x, index) {
 }
 
 function setMarkerClick(x, index) {
+    let questionID = userQuestions[index].id;
+    currentIndicator(questionID);
+
     let coordinate = userGeneratedData[index].coordinates;
     map.setView([coordinate[1], coordinate[0]]);
+
+    
 }
 
 function loadLocalStorage() {
@@ -88,6 +98,33 @@ function loadLocalStorage() {
 
 };
 
+
+
+function currentIndicator(questionID) {
+
+    let allIndicator = document.querySelectorAll(`.indicator`);
+    let allQuestionItem = document.querySelectorAll(`.questionItem`);
+
+    allIndicator.forEach((element) => {
+
+        if (element.dataset.arrowId == questionID) {
+            element.classList.remove("hidden");
+        }
+        if (element.dataset.arrowId != questionID) {
+            element.classList.add("hidden");
+        }
+    });
+
+    allQuestionItem.forEach((question) => {
+
+        if (question.dataset.questionId == questionID) {
+            question.classList.add("currentQuestion");
+        }
+        if (question.dataset.questionId != questionID) {
+            question.classList.remove("currentQuestion");
+        }
+    });
+}
 
 function saveLocalStorage() {
 
@@ -186,7 +223,7 @@ function showSavedGallery(x) {
 
 //To start the application for the website.
 function app() {
- //true
+    //true
 
 
     //loading presets and datas
@@ -223,34 +260,31 @@ function app() {
 
             var notificationModal = new bootstrap.Modal(document.getElementById('notification'), {
                 keyboard: false
-              });
+            });
 
 
-            if(!checkQuestion)
-            {
+            if (!checkQuestion) {
 
-                  notificationModal.show();
+                notificationModal.show();
 
 
-                  document.querySelector(".submitYes").addEventListener("click",function(){
+                document.querySelector(".submitYes").addEventListener("click", function () {
 
                     localStorage.removeItem("progress");
                     localStorage.removeItem("userAnswer");
                     localStorage.removeItem("userQuestion");
+                    location.reload();
+
+                })
 
 
-                location.reload();
-
-                  })
-
-
-                  document.querySelector(".submitNo").addEventListener("click",function(){
+                document.querySelector(".submitNo").addEventListener("click", function () {
                     notificationModal.hide();
 
-                  })
+                })
 
 
-            
+
             }
 
             userQuestions = localQuestion;
@@ -265,7 +299,7 @@ function app() {
             loadGallery(fullPokemon);
             loadPreset(localProgress);
 
-          
+
         }
 
 
@@ -311,7 +345,7 @@ function app() {
 
             let noticeTab = document.querySelector(".noticeTab");
             // let questionTab = document.querySelector(".answerQuestionTab");
-            map.removeLayer(markerArray[currentId]);
+            // map.removeLayer(markerArray[currentId]);
             questionItem[currentId].classList.remove("wrong");
             questionItem[currentId].classList.add("correct");
             pokemonIcon[currentId].src = "./img/correct.png";
@@ -333,16 +367,13 @@ function app() {
             userAnswer.push({ "questionId": questIndex, "pokemonID": pokeIndex, answer, status: "correct" });
 
             let addPokemon = document.querySelector(`[data-pokemon-index="${pokeIndex}"]`);
-
+            document.querySelector(`[data-pokeIcon-id="${questIndex}"]`).src="./img/captured.svg";
+            document.querySelector(`[data-timer-id="${questIndex}"]`).innerHTML = "Success";
 
 
             addPokemon.classList.remove("deactivate");
             addPokemon.classList.add("colured");
 
-
-            let questionbtn = document.querySelector(`.questionLog [data-question-id="${questIndex}"]`);
-
-            questionbtn.removeEventListener("click", setMarkerClick);
             questionModal.hide();
         }
 
@@ -357,9 +388,6 @@ function app() {
             questionStatus[currentId].innerHTML = `<img src="./img/wrong-status.png" class="img-fluid">`;
 
             userGeneratedData[currentId].status = "wrong";
-
-
-
             userAnswer.push({ "questionId": questIndex, "pokemonID": pokeIndex, answer, status: "wrong" });
 
             questionModal.hide();

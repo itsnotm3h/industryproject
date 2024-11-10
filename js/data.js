@@ -144,6 +144,8 @@ let sgLng = 103.851959;
 let pokemonMarker;
 let markerArray = [];
 let timerInterval;
+const markerTimers = {};
+let selectedLeaftletId;
 
 
 //Loading the Pokemon Data + Generating marker. 
@@ -207,7 +209,8 @@ function getLocation() {
         let currentStatus = userGeneratedData[eachMarker].status;
         let imageURL = userGeneratedData[eachMarker].pokemonImage;
         let questionIndex = userGeneratedData[eachMarker].questionIndex;
-        
+        let questionTime = setDisplayTime(userGeneratedData[eachMarker].timer);
+
         // to not that the coordinate is [lng,lat,0]
         let newlat = userGeneratedData[eachMarker].coordinates[1];
         let newlng = userGeneratedData[eachMarker].coordinates[0];
@@ -215,7 +218,7 @@ function getLocation() {
       
   
         let customDivIcon = L.divIcon({
-          html: `<div class="marker-wrapper"><div class="indicator"><img src="./img/arrow.png" class="img-fluid"></div><img src="${imageURL}" class="img-fluid pokeIcon"><div class="text-center timer w-50 m-auto" data-question-id="${questionIndex}"></div></div>`,
+          html: `<div class="marker-wrapper"><div class="indicator hidden" data-arrow-id="${questionIndex}"><img src="./img/arrow.svg" class="img-fluid"></div><img src="${imageURL}" class="img-fluid pokeIcon" data-pokeIcon-id="${questionIndex}"><div class="text-center timer w-50 m-auto" data-timer-id="${questionIndex}">${questionTime}</div></div>`,
           iconSize: [100, 100],
           zIndex: 1000,
           className: "markerIndex" 
@@ -225,25 +228,58 @@ function getLocation() {
         pokemonMarker.addTo(map);
         markerArray.push(pokemonMarker);     
         let timer = document.querySelectorAll(".timer");
+        
         // setInterval(startTime(miliSec,timer[eachMarker]),1000);
   
   
         pokemonMarker.addEventListener("click", function (e) {
+
+
+          if(selectedLeaftletId != e.target._leaflet_id )
+            {
+              console.log("yes");
+              clearInterval(markerTimers[eachMarker]);
+              delete markerTimers[eachMarker];
+            }
+
         //So that the question will only be loaded when the pokemon is clicked. 
         let question = userQuestions[eachMarker].question;
   
         document.querySelector(".modal-title").innerHTML = "Question:";
         document.querySelector(".question").innerHTML = `<p>${question}</p>`;
+        document.querySelector(".answerInput").value="";
+
   
         questionModal.show();
         answer = userQuestions[eachMarker].answer;
         currentId = eachMarker;
         currentQuestionId = userQuestions[eachMarker].questionIndex;
 
-        timerInterval = setInterval(() => {
-          setTimer(timer[eachMarker],eachMarker)
-        }, 1000);
 
+        selectedLeaftletId = e.target._leaflet_id;
+
+  
+        currentIndicator(questionIndex);
+        scrollQuestion(questionIndex);
+
+
+
+
+        // if (!timerInterval) {
+        //   timerInterval = setInterval(() => {
+        //     setTimer(timer[eachMarker],eachMarker)
+        //   }, 1000);
+        // }
+
+
+        //save timer in map so that we can stop the interval when they answer correct. I have use the index id as the key to retrieving the timer. 
+        if (!markerTimers[questionIndex]) {
+          // Start a new timer for this marker
+          markerTimers[questionIndex] = setInterval(() => {
+            setTimer(timer[eachMarker], eachMarker);
+          }, 1000);
+        }
+        
         let showQuestion = document.querySelectorAll(".questionItem");
         showQuestion[eachMarker].classList.remove("deactivate");
   
@@ -261,12 +297,11 @@ function getLocation() {
     {
       if(x[item].status == "correct")
       {
-        map.removeLayer(markerArray[item]);
-
         let questIndex = x[item].questionIndex;
-        let questionbtn = document.querySelector(`.questionLog [data-question-id="${questIndex}"]`);
+        document.querySelector(`[data-pokeIcon-id="${questIndex}"]`).src="./img/captured.svg";
+        document.querySelector(`[data-timer-id="${questIndex}"]`).innerHTML = "Success";
 
-        questionbtn.removeEventListener("click", setMarkerClick);
+
       }
     }
     
@@ -274,7 +309,19 @@ function getLocation() {
     //remove marker base on index.
   }
   
-  
+  function setDisplayTime(x){
+    var minutes = Math.floor(x / 1000 / 60);
+    var seconds = Math.floor(x / 1000) % 60;
+    if(seconds <=9)
+    {
+      seconds = "0" + seconds;
+    }
+
+    let display = minutes + ":" + seconds;
+
+
+    return display;
+  }
   
   function setTimer(timer,index) {
   
@@ -298,22 +345,37 @@ function getLocation() {
       miliSec = miliSec - 1000;
       userGeneratedData[index].timer =  miliSec;
 
-      if(miliSec == 0){
+      if(miliSec < 0 ){
         // check id the answer is already in and correct/ esle put it as wrong. 
-        map.removeLayer(markerArray[index]);
-        questionItem[currentId].classList.add("wrong");
+        // map.removeLayer(markerArray[index]);
+        let check =  questionItem[index].classList.contains("correct");
+
+        if(!check)
+        {
+
+
+        questionItem[index].classList.add("wrong");
         pokemonIcon[index].src="./img/wrong.png";
         questionStatus[index].innerHTML =`<img src="./img/wrong-status.png" class="img-fluid">`;
+
+        // document.querySelector(`.pokeIcon [data-question-id=${userGeneratedData[currentId].questionIndex}]`).src="./img/empty.svg";
+
+         document.querySelector(`[data-pokeIcon-id="${questIndex}"]`).src="./img/empty.svg";
+         document.querySelector(`[data-timer-id="${questIndex}"]`).innerHTML = "Failed";
+
+        // https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png
   
-        let questionbtn = document.querySelector(`.questionLog [data-question-id="${questIndex}"]`);
-  
-        questionbtn.removeEventListener("click", setMarkerClick);
         userAnswer.push({ "questionId": userGeneratedData[currentId].questionIndex, "pokemonID": userGeneratedData[currentId].pokemonIndex, answer:"blank", status: "wrong" });
-        questionbtn.removeEventListener("click", setMarkerClick);
 
         console.log(userAnswer);
+      }
+      else{
+        document.querySelector(`[data-timer-id="${questIndex}"]`).innerHTML = "Success";
+
+      }
 
       }
     }
+    
   }
 
