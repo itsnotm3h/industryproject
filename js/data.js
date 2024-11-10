@@ -293,6 +293,9 @@ function getLocation() {
   function removeCorrect (x){
     //get the index of the question
 
+    let questionStatus = document.querySelectorAll(".status");
+
+
     for(let item in x)
     {
       if(x[item].status == "correct")
@@ -300,9 +303,27 @@ function getLocation() {
         let questIndex = x[item].questionIndex;
         document.querySelector(`[data-pokeIcon-id="${questIndex}"]`).src="./img/captured.svg";
         document.querySelector(`[data-timer-id="${questIndex}"]`).innerHTML = "Success";
-
-
+        questionStatus[item].innerHTML =`<img src="./img/correct-status.png" class="img-fluid">`;
       }
+      else if(x[item].status == "wrong" || x[item].timer < 0)
+        {
+
+          let questIndex = x[item].questionIndex;
+          let checkClass = document.querySelector(`[data-questionitem-id="${questIndex}"]`).classList.contains("wrong");
+
+          document.querySelector(`[data-pokeIcon-id="${questIndex}"]`).src="./img/empty.svg";
+          document.querySelector(`[data-timer-id="${questIndex}"]`).innerHTML = "Failed";
+          questionStatus[item].innerHTML =`<img src="./img/wrong-status.png" class="img-fluid">`;
+
+          if(!checkClass)
+          {
+            
+            document.querySelector(`[data-question-id="${questIndex}"]`).classList.add("wrong");
+            document.querySelector(`[data-question-id="${questIndex}"]`).classList.remove("deactivate");
+            document.querySelector(`[data-question-id="${questIndex}"]`).querySelector(".pokemonIcon").src="./img/wrong.png";
+
+          }
+        }
     }
     
 
