@@ -348,6 +348,13 @@ table tr td, table tr th{
 
 }
 
+.indicator{    
+    position: absolute;
+    transform: rotate(-90deg);
+    width: 10px;
+    height: 10px;
+}
+
 /* CSS to override bootstrap */
 
 /* // `sm` applies to x-small devices (portrait phones, less than 576px) */

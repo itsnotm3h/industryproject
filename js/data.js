@@ -215,7 +215,7 @@ function getLocation() {
       
   
         let customDivIcon = L.divIcon({
-          html: `<div class="marker-wrapper"><img src="${imageURL}" class="img-fluid pokeIcon"><div class="text-center timer w-50 m-auto" data-question-id="${questionIndex}"></div></div>`,
+          html: `<div class="marker-wrapper"><div class="indicator"><img src="./img/arrow.png" class="img-fluid"></div><img src="${imageURL}" class="img-fluid pokeIcon"><div class="text-center timer w-50 m-auto" data-question-id="${questionIndex}"></div></div>`,
           iconSize: [100, 100],
           zIndex: 1000,
           className: "markerIndex" 
