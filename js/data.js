@@ -18,11 +18,13 @@ let localProgress = JSON.parse(localStorage.getItem("progress"));
 let localAnswer = JSON.parse(localStorage.getItem("userAnswer"));
 let localGallery = JSON.parse(localStorage.getItem('userPokemon'));
 let localQuestion = JSON.parse(localStorage.getItem('userQuestion'));
+let localTimer = JSON.parse(localStorage.getItem('defaultTimer'));
 
 let userGeneratedData = [];
 let fullPokemon = [];
 let selectedQuestion = [];
 let userQuestions = [];
+let defaultTimer = [];
 
 let geoLibrary = [];
 
@@ -133,6 +135,7 @@ async function generateQuestion(x) {
     let pokemonImage = fullPokemon[pokemonIndex - 1].pokemonImage;
     coordinates = geoLibrary.features[getRandomIndex(1, 1025, "")].geometry.coordinates;
     userGeneratedData.push({ pokemonIndex, pokemonImage, questionIndex, timer, coordinates,status:"" });
+    defaultTimer.push({timer});
   }
 }
 
@@ -228,41 +231,65 @@ function getLocation() {
         pokemonMarker.addTo(map);
         markerArray.push(pokemonMarker);     
         let timer = document.querySelectorAll(".timer");
-        
-        // setInterval(startTime(miliSec,timer[eachMarker]),1000);
-  
+          
   
         pokemonMarker.addEventListener("click", function (e) {
-
-
-          // if(selectedLeaftletId != e.target._leaflet_id )
-          //   {
-          //     console.log("yes");
-          //     clearInterval(markerTimers[eachMarker]);
-          //     delete markerTimers[eachMarker];
-          //   }
 
         //So that the question will only be loaded when the pokemon is clicked. 
 
         let question = userQuestions[eachMarker].question;
+        currentQuestionId = userQuestions[eachMarker].questionIndex;
+        let currentAnswer = document.querySelector(".answerInput");
+
+        let isCorrect = document.querySelector(`[data-question-id="${questionIndex}"]`).classList.contains("correct");
+        let isWrong = document.querySelector(`[data-question-id="${questionIndex}"]`).classList.contains("wrong");
+
+        let localProgress = JSON.parse(localStorage.getItem("progress"));
+
+        if(isCorrect || (isWrong && localProgress[eachMarker].timer < 0))
+        {
+          currentAnswer.value = getUserAnswer(questionIndex);
+          document.querySelector(".userAnswer").innerHTML=userAnswer;
+          document.querySelector(".icon").classList.remove("hidden");
+          document.querySelector(".submitAnswer").classList.add("hidden");
+          document.querySelector(".answerInput").disabled = true;
+          document.querySelector(".userAnswer").innerHTML=answer;
+
+
+          //remove hidden class from
+
+
+          if(isCorrect)
+          {
+            document.querySelector(".answerIcon").src="./img/icon_correct.svg";
+            document.querySelector(".explainSection").classList.add("hidden");
+          }
+
+          if(isWrong)
+          {
+            document.querySelector(".answerIcon").src="./img/icon_wrong.svg";
+          }
+
+        }
+        else if (!isCorrect || !isWrong){
+          currentAnswer.value="";
+          document.querySelector(".answerInput").disabled = false;
+          document.querySelector(".explainSection").classList.add("hidden");
+          document.querySelector(".icon").classList.add("hidden");
+          document.querySelector(".submitAnswer").classList.remove("hidden");
+        }
+
 
   
 
   
         document.querySelector(".modal-title").innerHTML = "Question:";
         document.querySelector(".question").innerHTML = `<p>${question}</p>`;
-        document.querySelector(".answerInput").value="";
 
   
         questionModal.show();
         answer = userQuestions[eachMarker].answer;
         currentId = eachMarker;
-        currentQuestionId = userQuestions[eachMarker].questionIndex;
-
-        let isCorrect = document.querySelector(`[data-question-id="${questionIndex}"]`).classList.contains("correct");
-
-        console.log(isCorrect);
-
 
         // selectedLeaftletId = e.target._leaflet_id;
 
@@ -279,9 +306,22 @@ function getLocation() {
         //   }, 1000);
         // }
 
+        function clearAllIntervalsExceptCurrent(currentIndex) {
+          for (let index in markerTimers) {
+            if (index != currentIndex && markerTimers[index]) {
+              clearInterval(markerTimers[index]);
+              markerTimers[index] = null; // Optionally reset the cleared interval
+            }
+          }
+        }
+
+        
+
 
         //save timer in map so that we can stop the interval when they answer correct. I have use the index id as the key to retrieving the timer. 
         if (!markerTimers[questionIndex]) {
+
+          clearAllIntervalsExceptCurrent(questionIndex);
           // Start a new timer for this marker
           markerTimers[questionIndex] = setInterval(() => {
             setTimer(timer[eachMarker], eachMarker);
@@ -298,8 +338,28 @@ function getLocation() {
 
   };
 
+
+  function getUserAnswer(x){
+
+    let localAnswer = JSON.parse(localStorage.getItem("userAnswer"));
+
+    // console.log(x);
+
+    for(let item in localAnswer)
+    {
+      if(localAnswer[item].questionId == x)
+      {
+        // console.log(localAnswer[item]);
+
+        return localAnswer[item].answer;
+      }
+    }
+  }
+
   function removeCorrect (x){
     //get the index of the question
+
+    
 
     let questionStatus = document.querySelectorAll(".status");
 
@@ -313,7 +373,7 @@ function getLocation() {
         document.querySelector(`[data-timer-id="${questIndex}"]`).innerHTML = "Success";
         questionStatus[item].innerHTML =`<img src="./img/correct-status.png" class="img-fluid">`;
       }
-      else if(x[item].status == "wrong" || x[item].timer < 0)
+      else if(x[item].status == "wrong" ||  x[item].timer <= 0)
         {
 
           let questIndex = x[item].questionIndex;
@@ -359,6 +419,25 @@ function getLocation() {
     let pokemonIcon = document.querySelectorAll(".pokemonIcon"); 
     let questionItem = document.querySelectorAll(".questionItem");
     let questIndex = userGeneratedData[index].questionIndex;
+    let pokeIndex = userGeneratedData[currentId].pokemonIndex;
+
+
+
+    let localAnswer = JSON.parse(localStorage.getItem("userAnswer"));
+    let localProgress = JSON.parse(localStorage.getItem("progress"));
+
+
+    if(localAnswer)
+    {
+        userAnswer = localAnswer;
+    }
+    if(localProgress)
+    {
+        userGeneratedData = localProgress;
+    }
+  
+
+
 
     
     if(miliSec >= 0) {
@@ -381,22 +460,27 @@ function getLocation() {
 
         if(!check)
         {
-
-
         questionItem[index].classList.add("wrong");
         pokemonIcon[index].src="./img/wrong.png";
         questionStatus[index].innerHTML =`<img src="./img/wrong-status.png" class="img-fluid">`;
 
-        // document.querySelector(`.pokeIcon [data-question-id=${userGeneratedData[currentId].questionIndex}]`).src="./img/empty.svg";
+        const checkedQuestion = userAnswer.find(item => item.questionId === questIndex);
+
+        if(checkedQuestion)
+          {
+              checkedQuestion.status="wrong";
+          }
+          else{
+              userAnswer.push({ "questionId": questIndex, "pokemonID": pokeIndex, answer, status: "wrong" });
+          }
+
+          saveLocalStorage();
+
 
          document.querySelector(`[data-pokeIcon-id="${questIndex}"]`).src="./img/empty.svg";
          document.querySelector(`[data-timer-id="${questIndex}"]`).innerHTML = "Failed";
 
-        // https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png
-  
-        userAnswer.push({ "questionId": userGeneratedData[currentId].questionIndex, "pokemonID": userGeneratedData[currentId].pokemonIndex, answer:"blank", status: "wrong" });
-
-        console.log(userAnswer);
+          
       }
       else{
         document.querySelector(`[data-timer-id="${questIndex}"]`).innerHTML = "Success";

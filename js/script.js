@@ -1,7 +1,11 @@
 //this is to add in question to the side panel
 function loadPreset(questionArray) {
+
+
+    let questionTab = document.querySelector(".questionLog");
+    questionTab.innerHTML="";
+
     for (let questionNo in questionArray) {
-        let questionTab = document.querySelector(".questionLog");
         let questionNum = parseInt(questionNo) + 1;
         let questionID = userQuestions[questionNo].id;
         let difficulty = userQuestions[questionNo].difficulty;
@@ -14,6 +18,11 @@ function loadPreset(questionArray) {
         let imgURl = "normal";
         if (progressStatus == "") {
             questionContainer.classList.add('deactivate');
+        }
+
+        if(progressStatus =="redo")
+        {
+
         }
 
         if (progressStatus == "correct" || progressStatus == "wrong") {
@@ -50,9 +59,9 @@ function loadPreset(questionArray) {
 }
 
 
-function scrollQuestion(questionIndex){
+function scrollQuestion(questionIndex) {
     let scrollItem = document.querySelector(`[data-questionitem-id="${questionIndex}"`)
-    scrollItem.scrollIntoView({behavior: 'smooth',block: "start" }, true);
+    scrollItem.scrollIntoView({ behavior: 'smooth', block: "start" }, true);
 }
 
 function showQuestion(x, index) {
@@ -76,7 +85,7 @@ function setMarkerClick(x, index) {
     let coordinate = userGeneratedData[index].coordinates;
     map.setView([coordinate[1], coordinate[0]]);
 
-    
+
 }
 
 function loadLocalStorage() {
@@ -132,6 +141,7 @@ function saveLocalStorage() {
     localStorage.setItem("userAnswer", JSON.stringify(userAnswer));
     localStorage.setItem("userPokemon", JSON.stringify(collectPokemon));
     localStorage.setItem("userQuestion", JSON.stringify(userQuestions));
+    localStorage.setItem("timer", JSON.stringify(defaultTimer));
 
 }
 
@@ -216,7 +226,128 @@ function showSavedGallery(x) {
 
 }
 
+function showNotification (event)
+{
+    const submitYes = document.querySelector(".submitYes");
 
+    var notificationModal = new bootstrap.Modal(document.getElementById('notification'), {
+        keyboard: false
+    });
+
+    document.querySelector(".submitNo").style.display="block";
+
+
+    let title="";
+    let message = "";
+
+    let count = 0;
+    for(let correct in userAnswer)
+    {
+        if(userAnswer[correct].status == "correct" )
+        {
+            count ++;
+        }
+    }
+
+
+    if(event == "newQuestion")
+    {
+        title="New Questions Detected!";
+        message="Do you wish to proceed to refresh the question? You will lose your progress so far."
+        
+    }
+
+    if(event == "redo")
+    {
+
+
+        title="You have complete the quiz";
+        message=`Your score:${count} <br/> Please click yes to redo the wrong question and no to reveal the correct answer.`
+    }
+
+
+    if(event == "reGenerate")
+        {
+            title="You have complete the quiz";
+            message=`Your score:${count} <br/> Please click yes to restart.`
+            document.querySelector(".submitNo").style.display="none";
+        }
+
+
+    document.querySelector(".notificationTitle").innerHTML=title;
+    document.querySelector(".notificationText").innerHTML=message;
+
+    notificationModal.show();
+
+
+    submitYes.addEventListener("click", function () {
+        
+
+    
+        if(event == "reGenerate" || event == "newQuestion")
+        {
+
+
+        localStorage.removeItem("progress");
+        localStorage.removeItem("userAnswer");
+        localStorage.removeItem("userQuestion");
+        localStorage.removeItem("timer");
+        
+        loadPreset(userGeneratedData);
+        notificationModal.hide();
+
+    }
+
+    if(event == "redo")
+    {
+
+        let localProgress = JSON.parse(localStorage.getItem("progress"));
+        let defaultTimer = JSON.parse(localStorage.getItem('timer'));
+
+
+        console.log("redo");
+
+        for(let timer in localProgress)
+            {
+
+                if(localProgress[timer].status == "wrong")
+                { 
+                    localProgress[timer].timer = defaultTimer[timer].timer
+                }
+            }
+
+
+        for(let status in localProgress)
+        {
+            if(localProgress[status].status == "wrong")
+            {
+                localProgress[status].status = "redo";
+            }
+        }
+
+
+        saveLocalStorage();
+        loadPreset(localProgress);
+        notificationModal.hide();
+
+
+
+    }
+
+    
+
+
+
+    })
+
+
+    document.querySelector(".submitNo").addEventListener("click", function () {
+        notificationModal.hide();
+        document.querySelector(".explainSection").classList.remove("hidden");
+    })
+    
+
+}
 
 
 
@@ -257,34 +388,8 @@ function app() {
             let checkQuestion = JSON.stringify(userQuestions) === JSON.stringify(localQuestion);
 
 
-
-            var notificationModal = new bootstrap.Modal(document.getElementById('notification'), {
-                keyboard: false
-            });
-
-
             if (!checkQuestion) {
-
-                notificationModal.show();
-
-
-                document.querySelector(".submitYes").addEventListener("click", function () {
-
-                    localStorage.removeItem("progress");
-                    localStorage.removeItem("userAnswer");
-                    localStorage.removeItem("userQuestion");
-                    location.reload();
-
-                })
-
-
-                document.querySelector(".submitNo").addEventListener("click", function () {
-                    notificationModal.hide();
-
-                })
-
-
-
+                showNotification("newQuestion");
             }
 
             userQuestions = localQuestion;
@@ -308,10 +413,21 @@ function app() {
     // after all is load add in the function.
     let submitBtn = document.querySelector(".submitAnswer");
     submitBtn.addEventListener("click", function () {
-        checkAnswer(answer)
+
+        let userinput = document.querySelector(".answerInput").value;
+
+        if(userinput =="")
+        {
+            document.querySelector(".error-answer").classList.add("was-validated");
+            document.querySelector(".error-answer").innerHTML = "Field is empty";
+            document.querySelector(".error-answer").style.display="block";
+        }
+        else{
+            document.querySelector(".error-answer").style.display="none";
+            checkAnswer(answer);
+        }
     }
     );
-
     document.querySelector("#galleryButton").addEventListener("click", function () {
         showSavedGallery(localGallery);
         document.querySelector("#map").classList.add("hidden");
@@ -340,8 +456,29 @@ function app() {
         let questionItem = document.querySelectorAll(".questionItem");
         let pokemonIcon = document.querySelectorAll(".pokemonIcon");
         let questionStatus = document.querySelectorAll(".status");
+        let questIndex = userGeneratedData[currentId].questionIndex;
+        let pokeIndex = userGeneratedData[currentId].pokemonIndex;
+        let answerStatus="";
+
+
+
+        let localAnswer = JSON.parse(localStorage.getItem("userAnswer"));
+        let localGallery = JSON.parse(localStorage.getItem('userPokemon'));
+
+        if(localAnswer)
+        {
+            userAnswer = localAnswer;
+        }
+        if(localGallery)
+        {
+            collectPokemon = localGallery;
+        }
+
+
 
         if (userinput == answer) {
+
+
 
             let noticeTab = document.querySelector(".noticeTab");
             // let questionTab = document.querySelector(".answerQuestionTab");
@@ -354,22 +491,23 @@ function app() {
             noticeTab.innerHTML = `<img src="./img/thumbsup.jpg" class="img-fluid>`;
 
             noticeTab.classList.remove("hidden");
-            let pokeIndex = userGeneratedData[currentId].pokemonIndex;
-            let questIndex = userGeneratedData[currentId].questionIndex;
-
             userGeneratedData[currentId].status = "correct";
             userGeneratedData[currentId].timer = 0;
 
+            answerStatus = "correct";
 
-            // console.log(userGeneratedData);
-            collectPokemon.push(pokeIndex);
 
-            userAnswer.push({ "questionId": questIndex, "pokemonID": pokeIndex, answer, status: "correct" });
+            const checkedPokemon = collectPokemon.find(item => item === pokeIndex);
+
+            if(!checkedPokemon)
+                {
+                    collectPokemon.push(pokeIndex);
+                }
+            
 
             let addPokemon = document.querySelector(`[data-pokemon-index="${pokeIndex}"]`);
-            document.querySelector(`[data-pokeIcon-id="${questIndex}"]`).src="./img/captured.svg";
+            document.querySelector(`[data-pokeIcon-id="${questIndex}"]`).src = "./img/captured.svg";
             document.querySelector(`[data-timer-id="${questIndex}"]`).innerHTML = "Success";
-
 
             addPokemon.classList.remove("deactivate");
             addPokemon.classList.add("colured");
@@ -379,8 +517,6 @@ function app() {
 
         else {
             console.log("Wrong Answer");
-            let questIndex = userGeneratedData[currentId].questionIndex;
-            let pokeIndex = userGeneratedData[currentId].pokemonIndex;
 
             questionItem[currentId].classList.remove("correct");
             questionItem[currentId].classList.add("wrong");
@@ -388,14 +524,70 @@ function app() {
             questionStatus[currentId].innerHTML = `<img src="./img/wrong-status.png" class="img-fluid">`;
 
             userGeneratedData[currentId].status = "wrong";
-            userAnswer.push({ "questionId": questIndex, "pokemonID": pokeIndex, answer, status: "wrong" });
+            answerStatus = "wrong";
 
             questionModal.hide();
         }
+
+
+        ///update the localStorage for userAnswer;
+
+        try{
+            const checkedQuestion = userAnswer.find(item => item.questionId === questIndex);
+
+            if(checkedQuestion)
+                {
+                    checkedQuestion.status=answerStatus;
+                }
+                else{
+                    userAnswer.push({ "questionId": questIndex, "pokemonID": pokeIndex, answer, status: answerStatus });
+                }
+
+
+                saveLocalStorage();
+
+                let correct = 0;
+
+                for(let time in userGeneratedData)
+                {
+                    if(userGeneratedData[time].status == "correct")
+                    {
+                        correct++;
+                    }
+                }
+
+
+
+                if(userAnswer.length == 10 )
+                {
+                    if(correct == 10)
+                    {
+                        showNotification("reGenerate");
+                    }
+                    else{
+                        showNotification("redo");
+
+                    }
+
+
+                }
+        
+        }
+        catch(e)
+        {
+            console.log(e);
+        }
+
+
+    
+
     }
+
+    showNotification("redo");
+
 }
 
-
+// [{"questionId":"Q001","pokemonID":25,"answer":"12","status":"correct"},{"questionId":"Q007","pokemonID":711,"answer":801,"status":"wrong"},{"questionId":"Q009","pokemonID":852,"answer":21,"status":"wrong"},{"questionId":"Q004","pokemonID":830,"answer":10,"status":"wrong"},{"questionId":"Q010","pokemonID":692,"answer":53,"status":"wrong"},{"questionId":"Q003","pokemonID":541,"answer":50,"status":"wrong"},{"questionId":"Q008","pokemonID":625,"answer":5,"status":"wrong"},{"questionId":"Q002","pokemonID":245,"answer":8,"status":"wrong"},{"questionId":"Q005","pokemonID":894,"answer":"3/4","status":"wrong"},{"questionId":"Q006","pokemonID":856,"answer":24,"status":"wrong"}]
 
 app();
 

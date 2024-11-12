@@ -26,12 +26,14 @@
           <div class="answerQuestionTab">
             <div class="question">Modal body text goes here.</div>
             <div class="answerSection d-flex">
-             <div><input type="answer" class="form-control answerInput"
-                id="exampleFormControlInput1" placeholder="answer here"></div>
-                <div class="icon p-1 hidden"><img src="./img/icon_wrong.svg" width="30px"></div>
+             <div><input type="answer" class="form-control answerInput w-100"
+                id="exampleFormControlInput1" placeholder="Answer in digits" required ></div>
+                <div class="icon p-1 hidden"><img src="./img/icon_wrong.svg" width="30px" class="answerIcon"></div>
             </div>
+            <div class="invalid-feedback is-invalid error-answer"></div>
+
             <div class="explainSection mt-1 hidden">
-          <div class="m-2"><small>Answer: 12</small></div>
+          <div class="m-2"><small>Answer:<span class="userAnswer"></span></small></div>
           </div>
             
           </div>
@@ -49,12 +51,12 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">New Questions Detected!</h5>
+          <h5 class="modal-title notificationTitle"></h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="answerQuestionTab">
-            <div class="question">Do you wish to proceed to refresh the question? You will lose your progress so far.
+            <div class="question notificationText">
             </div>
           </div>
 
