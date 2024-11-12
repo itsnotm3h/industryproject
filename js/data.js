@@ -235,15 +235,19 @@ function getLocation() {
         pokemonMarker.addEventListener("click", function (e) {
 
 
-          if(selectedLeaftletId != e.target._leaflet_id )
-            {
-              console.log("yes");
-              clearInterval(markerTimers[eachMarker]);
-              delete markerTimers[eachMarker];
-            }
+          // if(selectedLeaftletId != e.target._leaflet_id )
+          //   {
+          //     console.log("yes");
+          //     clearInterval(markerTimers[eachMarker]);
+          //     delete markerTimers[eachMarker];
+          //   }
 
         //So that the question will only be loaded when the pokemon is clicked. 
+
         let question = userQuestions[eachMarker].question;
+
+  
+
   
         document.querySelector(".modal-title").innerHTML = "Question:";
         document.querySelector(".question").innerHTML = `<p>${question}</p>`;
@@ -255,8 +259,12 @@ function getLocation() {
         currentId = eachMarker;
         currentQuestionId = userQuestions[eachMarker].questionIndex;
 
+        let isCorrect = document.querySelector(`[data-question-id="${questionIndex}"]`).classList.contains("correct");
 
-        selectedLeaftletId = e.target._leaflet_id;
+        console.log(isCorrect);
+
+
+        // selectedLeaftletId = e.target._leaflet_id;
 
   
         currentIndicator(questionIndex);
