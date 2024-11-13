@@ -228,13 +228,9 @@ body{
 }
 
 #sideNavigation{
-    width: 30px;
-    height: 100%;
-    position: absolute;
-    right: 1%;
-    top:0;
+    right: 5%;
+    top:10%;
     bottom:0;
-    margin: auto;
     z-index: 100;
 }
 
@@ -244,67 +240,44 @@ body{
 }
 
 .sidebar{
-    margin: auto;
-    height: 50%;
-    width: 30px;
     background-color: #C52B2B;
     border-radius: 20px;    
-    z-index: 1000 !important;
 }
 
 .sideNav{
-    width: 100%;
     position: relative;
 }
 
-.sideNavItem{
-    width: 50%;
-    height: 80%;
-    position: absolute;
-    top:0;
-    right:8px;
-    bottom:0;
-    margin:auto;
-    transition-property: width;
-    transition-duration: 1s;
-}
-
-.sideNavItem img{
-    opacity: 0;
-    transition-property: opacity;
-    height: 100%;
-    transition-duration: 1s;
-}
-.sideNavItem.yellow{
+.yellow{
     background-color: #f1cd5f;
 }
-.sideNavItem.pink{
+.pink{
     background-color: rgb(244, 182, 183,1);
 }
 
-.sideNavItem.purple{
+.purple{
     background-color: rgb(215, 191, 235,1);
 }
 
-.sideNavItem.orange{
+.orange{
     background-color: #f3b182;
 }
 
-.sideNavItem img:hover{
+/* .sideNavItem img:hover{
     opacity: 1;
 }
 
 .sideNavItem.pink:hover{
     width: 230px;
     right:8px;
-}
+} */
 
-.sideNavItem:hover{
+/* .sideNavItem:hover{ */
     /* background-color: rgb(244, 182, 183,0); */
     /* background-color:none!important; */
-    width: 200px;
+    /* width: 200px;
     right:8px; 
-}
+} */
 
 
 table tr td, table tr th{

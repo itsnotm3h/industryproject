@@ -3,7 +3,7 @@ function loadPreset(questionArray) {
 
 
     let questionTab = document.querySelector(".questionLog");
-    questionTab.innerHTML="";
+    questionTab.innerHTML = "";
 
     for (let questionNo in questionArray) {
         let questionNum = parseInt(questionNo) + 1;
@@ -20,8 +20,7 @@ function loadPreset(questionArray) {
             questionContainer.classList.add('deactivate');
         }
 
-        if(progressStatus =="redo")
-        {
+        if (progressStatus == "redo") {
 
         }
 
@@ -226,115 +225,105 @@ function showSavedGallery(x) {
 
 }
 
-function showNotification (event)
-{
+function showNotification(event) {
     const submitYes = document.querySelector(".submitYes");
+
+    let localAnswer = JSON.parse(localStorage.getItem("userAnswer"));
+
+
 
     var notificationModal = new bootstrap.Modal(document.getElementById('notification'), {
         keyboard: false
     });
 
-    document.querySelector(".submitNo").style.display="block";
+    document.querySelector(".submitNo").style.display = "block";
 
 
-    let title="";
+    let title = "";
     let message = "";
 
     let count = 0;
-    for(let correct in userAnswer)
-    {
-        if(userAnswer[correct].status == "correct" )
-        {
-            count ++;
+    for (let correct in localAnswer) {
+        if (localAnswer[correct].status == "correct") {
+            count++;
         }
     }
 
+    if (event == "newQuestion") {
+        title = "New Questions Detected!";
+        message = "Do you wish to proceed to refresh the question? You will lose your progress so far."
 
-    if(event == "newQuestion")
-    {
-        title="New Questions Detected!";
-        message="Do you wish to proceed to refresh the question? You will lose your progress so far."
-        
     }
 
-    if(event == "redo")
-    {
+    if (event == "redo") {
 
 
-        title="You have complete the quiz";
-        message=`Your score:${count} <br/> Please click yes to redo the wrong question and no to reveal the correct answer.`
+        title = "You have complete the quiz";
+        message = `Your score:${count} <br/> Please click yes to redo the wrong question and no to reveal the correct answer.`
+    }
+
+    if (event == "reGenerate") {
+        title = "You have complete the quiz";
+        message = `Your score:${count} <br/> Please click yes to restart.`
+        document.querySelector(".submitNo").style.display = "none";
     }
 
 
-    if(event == "reGenerate")
-        {
-            title="You have complete the quiz";
-            message=`Your score:${count} <br/> Please click yes to restart.`
-            document.querySelector(".submitNo").style.display="none";
-        }
-
-
-    document.querySelector(".notificationTitle").innerHTML=title;
-    document.querySelector(".notificationText").innerHTML=message;
+    document.querySelector(".notificationTitle").innerHTML = title;
+    document.querySelector(".notificationText").innerHTML = message;
 
     notificationModal.show();
 
 
     submitYes.addEventListener("click", function () {
-        
-
-    
-        if(event == "reGenerate" || event == "newQuestion")
-        {
 
 
-        localStorage.removeItem("progress");
-        localStorage.removeItem("userAnswer");
-        localStorage.removeItem("userQuestion");
-        localStorage.removeItem("timer");
-        
-        loadPreset(userGeneratedData);
-        notificationModal.hide();
 
-    }
-
-    if(event == "redo")
-    {
-
-        let localProgress = JSON.parse(localStorage.getItem("progress"));
-        let defaultTimer = JSON.parse(localStorage.getItem('timer'));
+        if (event == "reGenerate" || event == "newQuestion") {
 
 
-        console.log("redo");
+            localStorage.removeItem("progress");
+            localStorage.removeItem("userAnswer");
+            localStorage.removeItem("userQuestion");
+            localStorage.removeItem("timer");
 
-        for(let timer in localProgress)
-            {
+            location.reload();
 
-                if(localProgress[timer].status == "wrong")
-                { 
-                    localProgress[timer].timer = defaultTimer[timer].timer
+            // loadPreset(userGeneratedData);
+            notificationModal.hide();
+
+        }
+
+        if (event == "redo") {
+
+            let localProgress = JSON.parse(localStorage.getItem("progress"));
+            let defaultTimer = JSON.parse(localStorage.getItem('timer'));
+
+
+            userGeneratedData = localProgress;
+
+
+            console.log("redo");
+
+            for (let timer in userGeneratedData) {
+
+                if (userGeneratedData[timer].status == "wrong") {
+                    userGeneratedData[timer].timer = defaultTimer[timer].timer;
+                    userGeneratedData[timer].status = "redo";
                 }
             }
 
+            console.log(userGeneratedData);
 
-        for(let status in localProgress)
-        {
-            if(localProgress[status].status == "wrong")
-            {
-                localProgress[status].status = "redo";
-            }
+            saveLocalStorage();
+            loadPreset(userGeneratedData);
+            notificationModal.hide();
+
+
+
         }
 
 
-        saveLocalStorage();
-        loadPreset(localProgress);
-        notificationModal.hide();
-
-
-
-    }
-
-    
 
 
 
@@ -342,10 +331,23 @@ function showNotification (event)
 
 
     document.querySelector(".submitNo").addEventListener("click", function () {
-        notificationModal.hide();
+        let localProgress = JSON.parse(localStorage.getItem("progress"));
+
+        for (let timer in localProgress) {
+            if (localProgress[timer].status == "wrong") {
+                localProgress[timer].timer = 0;
+            }
+        }
+        userGeneratedData = localProgress;
+        saveLocalStorage();
+
+        removeCorrect(userGeneratedData);
         document.querySelector(".explainSection").classList.remove("hidden");
+
+        notificationModal.hide();
+
     })
-    
+
 
 }
 
@@ -355,6 +357,36 @@ function showNotification (event)
 //To start the application for the website.
 function app() {
     //true
+
+    let localProgress = JSON.parse(localStorage.getItem("progress"));
+    let localAnswer = JSON.parse(localStorage.getItem("userAnswer"));
+
+    
+
+    if(localProgress)
+    {
+        let correct=0;
+        let wrong=0;
+
+
+        for (let item in localProgress) {
+            if (localProgress[item].status == "correct") {
+                correct++;
+            }
+            if (localProgress[item].status == "wrong") {
+                wrong++;
+            }
+        }
+
+        if(correct == 10)
+        {
+            showNotification("reGenerate");
+        }
+        if(wrong <= 10 && localAnswer.length==10)
+            {
+                showNotification("redo");
+            }
+    }
 
 
     //loading presets and datas
@@ -416,14 +448,13 @@ function app() {
 
         let userinput = document.querySelector(".answerInput").value;
 
-        if(userinput =="")
-        {
+        if (userinput == "") {
             document.querySelector(".error-answer").classList.add("was-validated");
             document.querySelector(".error-answer").innerHTML = "Field is empty";
-            document.querySelector(".error-answer").style.display="block";
+            document.querySelector(".error-answer").style.display = "block";
         }
-        else{
-            document.querySelector(".error-answer").style.display="none";
+        else {
+            document.querySelector(".error-answer").style.display = "none";
             checkAnswer(answer);
         }
     }
@@ -458,22 +489,28 @@ function app() {
         let questionStatus = document.querySelectorAll(".status");
         let questIndex = userGeneratedData[currentId].questionIndex;
         let pokeIndex = userGeneratedData[currentId].pokemonIndex;
-        let answerStatus="";
+        let answerStatus = "";
 
 
 
         let localAnswer = JSON.parse(localStorage.getItem("userAnswer"));
         let localGallery = JSON.parse(localStorage.getItem('userPokemon'));
+        let localProgress = JSON.parse(localStorage.getItem("progress"));
 
-        if(localAnswer)
-        {
+
+
+        if (localAnswer) {
             userAnswer = localAnswer;
         }
-        if(localGallery)
-        {
+        if (localGallery) {
             collectPokemon = localGallery;
         }
+        if(localProgress)
+        {
+            userGeneratedData = localProgress;
 
+        }
+        
 
 
         if (userinput == answer) {
@@ -499,11 +536,10 @@ function app() {
 
             const checkedPokemon = collectPokemon.find(item => item === pokeIndex);
 
-            if(!checkedPokemon)
-                {
-                    collectPokemon.push(pokeIndex);
-                }
-            
+            if (!checkedPokemon) {
+                collectPokemon.push(pokeIndex);
+            }
+
 
             let addPokemon = document.querySelector(`[data-pokemon-index="${pokeIndex}"]`);
             document.querySelector(`[data-pokeIcon-id="${questIndex}"]`).src = "./img/captured.svg";
@@ -514,7 +550,6 @@ function app() {
 
             questionModal.hide();
         }
-
         else {
             console.log("Wrong Answer");
 
@@ -532,62 +567,77 @@ function app() {
 
         ///update the localStorage for userAnswer;
 
-        try{
+        try {
+
+
+
+        
             const checkedQuestion = userAnswer.find(item => item.questionId === questIndex);
 
-            if(checkedQuestion)
-                {
-                    checkedQuestion.status=answerStatus;
+            if (checkedQuestion) {
+                checkedQuestion.status = answerStatus;
+                checkedQuestion.answer = userinput;
+
+            }
+            else {
+                userAnswer.push({ "questionId": questIndex, "pokemonID": pokeIndex, "answer":userinput, status: answerStatus });
+            }
+
+            saveLocalStorage();
+
+
+
+            let correct = 0;
+
+            for (let time in userGeneratedData) {
+                if (userGeneratedData[time].status == "correct") {
+                    correct++;
                 }
-                else{
-                    userAnswer.push({ "questionId": questIndex, "pokemonID": pokeIndex, answer, status: answerStatus });
+            }
+
+
+
+            let redo = 0;
+
+            for (let time in userGeneratedData) {
+                if (userGeneratedData[time].status == "redo") {
+                    redo++;
+                }
+            }
+
+
+            
+            let wrong = 0;
+
+            for (let time in userGeneratedData) {
+                if (userGeneratedData[time].status == "wrong") {
+                    wrong++;
+                }
+            }
+
+
+            if (userAnswer.length == 10) {
+                if (correct == 10 && redo == 0) {
+                    showNotification("reGenerate");
+                }
+                else if (redo == 0 && wrong !=0) {
+                    showNotification("redo");
                 }
 
 
-                saveLocalStorage();
+            }
 
-                let correct = 0;
-
-                for(let time in userGeneratedData)
-                {
-                    if(userGeneratedData[time].status == "correct")
-                    {
-                        correct++;
-                    }
-                }
-
-
-
-                if(userAnswer.length == 10 )
-                {
-                    if(correct == 10)
-                    {
-                        showNotification("reGenerate");
-                    }
-                    else{
-                        showNotification("redo");
-
-                    }
-
-
-                }
-        
         }
-        catch(e)
-        {
+        catch (e) {
             console.log(e);
         }
 
 
-    
+
 
     }
 
-    showNotification("redo");
-
 }
-
-// [{"questionId":"Q001","pokemonID":25,"answer":"12","status":"correct"},{"questionId":"Q007","pokemonID":711,"answer":801,"status":"wrong"},{"questionId":"Q009","pokemonID":852,"answer":21,"status":"wrong"},{"questionId":"Q004","pokemonID":830,"answer":10,"status":"wrong"},{"questionId":"Q010","pokemonID":692,"answer":53,"status":"wrong"},{"questionId":"Q003","pokemonID":541,"answer":50,"status":"wrong"},{"questionId":"Q008","pokemonID":625,"answer":5,"status":"wrong"},{"questionId":"Q002","pokemonID":245,"answer":8,"status":"wrong"},{"questionId":"Q005","pokemonID":894,"answer":"3/4","status":"wrong"},{"questionId":"Q006","pokemonID":856,"answer":24,"status":"wrong"}]
 
 app();
 
