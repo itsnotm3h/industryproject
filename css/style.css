@@ -232,6 +232,7 @@ body{
     top:10%;
     bottom:0;
     z-index: 100;
+    height: 50px;
 }
 
 .navTry{
@@ -241,7 +242,9 @@ body{
 
 .sidebar{
     background-color: #C52B2B;
-    border-radius: 20px;    
+    border-radius: 20px;  
+    width: 30%; 
+    padding:10px;
 }
 
 .sideNav{
@@ -261,6 +264,10 @@ body{
 
 .orange{
     background-color: #f3b182;
+}
+.navIcon{
+    width: 50px!important;
+    min-width:50px!important;
 }
 
 /* .sideNavItem img:hover{
@@ -318,7 +325,6 @@ table tr td, table tr th{
 .roundBtn:hover{
     background-color:#61a767;   
     color:white;
-
 }
 
 .indicator{    
@@ -356,11 +362,9 @@ table tr td, table tr th{
 /* // `sm` applies to x-small devices (portrait phones, less than 576px) */
 @media (max-width: 575.98px) { 
 
-
-    #sideNavigation{
-        width: 20px;
-        right: 0%;
-        z-index: 100!important;
+    .sidebar{
+        top:20%;
+        width: 80%; 
     }
 
  }
@@ -378,6 +382,11 @@ table tr td, table tr th{
     }
     .questionList {
         height: 20vh;
+    }
+
+    .sidebar{
+        top:20%;
+        width: 80%; 
     }
     /* #boxStage{
         height: 75%;
@@ -397,6 +406,10 @@ table tr td, table tr th{
 
 /* // `lg` applies to medium devices (tablets, less than 992px) */
 @media (max-width: 991.98px) { 
+    .sidebar{
+        top:20%;
+        width: 60%; 
+    }
 
  }
 
