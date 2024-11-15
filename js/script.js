@@ -492,6 +492,9 @@ function app() {
         let answerStatus = "";
 
 
+        
+ 
+
 
         let localAnswer = JSON.parse(localStorage.getItem("userAnswer"));
         let localGallery = JSON.parse(localStorage.getItem('userPokemon'));
