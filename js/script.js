@@ -83,8 +83,6 @@ function setMarkerClick(x, index) {
 
     let coordinate = userGeneratedData[index].coordinates;
     map.setView([coordinate[1], coordinate[0]]);
-
-
 }
 
 function loadLocalStorage() {

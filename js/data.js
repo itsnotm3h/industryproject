@@ -56,88 +56,88 @@ var questionModal = new bootstrap.Modal(document.getElementById('myModal'), {
   keyboard: false
 });
 
-function getRandomIndex(min, max, ignore) {
-  let calculate;
-  calculate = Math.floor(Math.random() * (max - min + 1)) + min;
+// function getRandomIndex(min, max, ignore) {
+//   let calculate;
+//   calculate = Math.floor(Math.random() * (max - min + 1)) + min;
 
-  if (ignore) {
-    let check = ignore.includes(calculate);
+//   if (ignore) {
+//     let check = ignore.includes(calculate);
 
-    while (check) {
-      calculate = Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-  }
+//     while (check) {
+//       calculate = Math.floor(Math.random() * (max - min + 1)) + min;
+//     }
+//   }
 
-  return calculate;
-};
-
-
-async function loadQuestionData() {
-  let response = await axios.get(`${JSON_BIN_BASE_URL}/b/${JSON_BIN_ID}/latest`);
-  return response.data.record;
-}
-
-async function loadGeoLocation() {
-  let response = await axios.get(GEOJSON);
-  return response.data;
-}
+//   return calculate;
+// };
 
 
-async function loadPokemonLibrary(index) {
-  try {
-    let response = await axios.get(POKEMONURL + index);
-    if (response.data && response.data.id && response.data.name && response.data.sprites.front_default) {
-      return {
-        id: response.data.id,
-        name: response.data.name,
-        image: response.data.sprites.front_default,
-      }
-    }
-    else {
-      ignoreIndex.push(index);
-      return {
-        id: 'null',
-        name: 'Unknown Pokémon',
-        image: 'Unknown'
-      }
-    }
-  }
-  catch (error) {
-    // console.error(`Failed to load Pokémon data for index ${index}:`, error);
-    return {
-      id: 'null',
-      name: 'Unknown Pokémon',
-      image: 'Unknown'
-    };
-  }
+// async function loadQuestionData() {
+//   let response = await axios.get(`${JSON_BIN_BASE_URL}/b/${JSON_BIN_ID}/latest`);
+//   return response.data.record;
+// }
 
-}
+// async function loadGeoLocation() {
+//   let response = await axios.get(GEOJSON);
+//   return response.data;
+// }
 
 
+// async function loadPokemonLibrary(index) {
+//   try {
+//     let response = await axios.get(POKEMONURL + index);
+//     if (response.data && response.data.id && response.data.name && response.data.sprites.front_default) {
+//       return {
+//         id: response.data.id,
+//         name: response.data.name,
+//         image: response.data.sprites.front_default,
+//       }
+//     }
+//     else {
+//       ignoreIndex.push(index);
+//       return {
+//         id: 'null',
+//         name: 'Unknown Pokémon',
+//         image: 'Unknown'
+//       }
+//     }
+//   }
+//   catch (error) {
+//     // console.error(`Failed to load Pokémon data for index ${index}:`, error);
+//     return {
+//       id: 'null',
+//       name: 'Unknown Pokémon',
+//       image: 'Unknown'
+//     };
+//   }
 
-async function generateQuestion(x) {
+// }
 
-  let coordinates;
-  geoLibrary = await loadGeoLocation();
 
-  for (let i = 0; i < x; i++) {
 
-    let pokemonIndex = getRandomIndex(0, 1025, ignoreIndex);
+// async function generateQuestion(x) {
 
-    if (i == 0) {
-      pokemonIndex = 25;
-    }
+//   let coordinates;
+//   geoLibrary = await loadGeoLocation();
 
-    let questionIndex = userQuestions[i].id;
-    let timer = (timerSetting[getRandomIndex(0, 3, "")]) * 60 * 1000;
-    let pokemonImage = fullPokemon[pokemonIndex - 1].pokemonImage;
-    coordinates = geoLibrary.features[getRandomIndex(1, 1025, "")].geometry.coordinates;
-    userGeneratedData.push({ pokemonIndex, pokemonImage, questionIndex, timer, coordinates, status: "" });
-    defaultTimer.push({ timer });
-  }
+//   for (let i = 0; i < x; i++) {
 
-  saveLocalStorage();
-}
+//     let pokemonIndex = getRandomIndex(0, 1025, ignoreIndex);
+
+//     if (i == 0) {
+//       pokemonIndex = 25;
+//     }
+
+//     let questionIndex = userQuestions[i].id;
+//     let timer = (timerSetting[getRandomIndex(0, 3, "")]) * 60 * 1000;
+//     let pokemonImage = fullPokemon[pokemonIndex - 1].pokemonImage;
+//     coordinates = geoLibrary.features[getRandomIndex(1, 1025, "")].geometry.coordinates;
+//     userGeneratedData.push({ pokemonIndex, pokemonImage, questionIndex, timer, coordinates, status: "" });
+//     defaultTimer.push({ timer });
+//   }
+
+//   saveLocalStorage();
+// }
 
 
 var map;
@@ -190,46 +190,46 @@ function showError(error) {
 
 
 //loadMap 
-async function loadMap(lat, lng) {
+// async function loadMap(lat, lng) {
 
-  geoLibrary = await loadGeoLocation();
-
-
-  map = L.map('map').setView([lat, lng], 16);
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    minZoom: 14,
-    maxZoom: 16,
-    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-  }).addTo(map);
-
-  userGeneratedData[0].coordinates[1] = lat;
-  userGeneratedData[0].coordinates[0] = lng;
+//   geoLibrary = await loadGeoLocation();
 
 
-  //generate marker here. 
-  for (let eachMarker in userGeneratedData) {
-    let currentStatus = userGeneratedData[eachMarker].status;
-    let imageURL = userGeneratedData[eachMarker].pokemonImage;
-    let questionIndex = userGeneratedData[eachMarker].questionIndex;
-    let questionTime = setDisplayTime(userGeneratedData[eachMarker].timer);
+//   map = L.map('map').setView([lat, lng], 16);
+//   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+//     minZoom: 14,
+//     maxZoom: 16,
+//     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+//   }).addTo(map);
 
-    // to not that the coordinate is [lng,lat,0]
-    let newlat = userGeneratedData[eachMarker].coordinates[1];
-    let newlng = userGeneratedData[eachMarker].coordinates[0];
-
+//   userGeneratedData[0].coordinates[1] = lat;
+//   userGeneratedData[0].coordinates[0] = lng;
 
 
-    let customDivIcon = L.divIcon({
-      html: `<div class="marker-wrapper"><div class="indicator hidden" data-arrow-id="${questionIndex}"><img src="./img/arrow.svg" class="img-fluid"></div><img src="${imageURL}" class="img-fluid pokeIcon" data-pokeIcon-id="${questionIndex}"><div class="text-center timer w-50 m-auto" data-timer-id="${questionIndex}">${questionTime}</div></div>`,
-      iconSize: [100, 100],
-      zIndex: 1000,
-      className: "markerIndex"
-    });
+//   //generate marker here. 
+//   for (let eachMarker in userGeneratedData) {
+//     let currentStatus = userGeneratedData[eachMarker].status;
+//     let imageURL = userGeneratedData[eachMarker].pokemonImage;
+//     let questionIndex = userGeneratedData[eachMarker].questionIndex;
+//     let questionTime = setDisplayTime(userGeneratedData[eachMarker].timer);
 
-    pokemonMarker = L.marker([newlat, newlng], { icon: customDivIcon });
-    pokemonMarker.addTo(map);
-    markerArray.push(pokemonMarker);
-    let timer = document.querySelectorAll(".timer");
+//     // to not that the coordinate is [lng,lat,0]
+//     let newlat = userGeneratedData[eachMarker].coordinates[1];
+//     let newlng = userGeneratedData[eachMarker].coordinates[0];
+
+
+
+//     let customDivIcon = L.divIcon({
+//       html: `<div class="marker-wrapper"><div class="indicator hidden" data-arrow-id="${questionIndex}"><img src="./img/arrow.svg" class="img-fluid"></div><img src="${imageURL}" class="img-fluid pokeIcon" data-pokeIcon-id="${questionIndex}"><div class="text-center timer w-50 m-auto" data-timer-id="${questionIndex}">${questionTime}</div></div>`,
+//       iconSize: [100, 100],
+//       zIndex: 1000,
+//       className: "markerIndex"
+//     });
+
+//     pokemonMarker = L.marker([newlat, newlng], { icon: customDivIcon });
+//     pokemonMarker.addTo(map);
+//     markerArray.push(pokemonMarker);
+//     let timer = document.querySelectorAll(".timer");
 
 
 
