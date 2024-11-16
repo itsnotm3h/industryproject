@@ -138,9 +138,11 @@ function app() {
 
     document.querySelector(".submitAnswer").addEventListener("click", function () {
 
-        let userinput = document.querySelector(".answerInput").value;
-        console.log(currentIndex);
+        let userInput = document.querySelector(".answerInput").value;
 
+        let entry = generatedData.find(item => item.questionId == currentIndex);
+
+        checkAnswer(entry,userInput);
         // if (userinput == "") {
         //     document.querySelector(".error-answer").classList.add("was-validated");
         //     document.querySelector(".error-answer").innerHTML = "Field is empty";

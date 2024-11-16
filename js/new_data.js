@@ -136,6 +136,7 @@ let questionLimit = 10;
 // let timerSetting = [5, 6, 7, 8];
 let previousIndex = 0;
 let generatedData = [];
+let pokemonCollection =[];
 let timerSetting = [0.1, 0.1, 0.1, 0.1];
 let currentIndex;
 
@@ -325,7 +326,17 @@ function showAnswer(time,status,answer,id){
 
     //remove hidden class from
     if (status=="correct") {
+
+      questionItem.classList.add("correct");
+      questionItem.classList.remove("correct");
+      questionIcon.src="./img/correct.png";
       document.querySelector(".answerIcon").src = "./img/icon_correct.svg";
+      questionStatus.innerHTML = `<img src="./img/correct-status.png" class="img-fluid">`;
+      pokemonIcon.src = "./img/captured.svg";
+      timer.innerHTML = "Success";
+
+
+
       document.querySelector(".explainSection").classList.add("hidden");
     }
 
@@ -435,53 +446,68 @@ function getUserAnswer(x) {
   }
 }
 
-function checkAnswer(answer,userInput)
+function checkAnswer(target,userInput)
 {
-        if (userInput == answer) {
+  let answer = target.answer;
+  target.userAnswer = userInput;
+  let pokemonIndex = target.pokemon.index;
+  let questionId = target.questionId;
+  let timer = target.timer.current;
+  let status = target.status;
+
+
+  console.log(questionId)
+
+        if(userInput == answer) {
 
             let noticeTab = document.querySelector(".noticeTab");
     
-            pokemonIcon[currentId].src = "./img/correct.png";
-            questionStatus[currentId].innerHTML = `<img src="./img/correct-status.png" class="img-fluid">`;
+            // pokemonIcon[currentId].src = "./img/correct.png";
+            // questionStatus[currentId].innerHTML = `<img src="./img/correct-status.png" class="img-fluid">`;
 
             noticeTab.innerHTML = `<img src="./img/thumbsup.jpg" class="img-fluid>`;
 
             noticeTab.classList.remove("hidden");
-            userGeneratedData[currentId].status = "correct";
-            userGeneratedData[currentId].timer = 0;
+            status="correct";
+            target.timer.current=0;
+            // userGeneratedData[currentId].status = "correct";
+            // userGeneratedData[currentId].timer = 0;
 
-            answerStatus = "correct";
+            // answerStatus = "correct";
 
 
-            const checkedPokemon = collectPokemon.find(item => item === pokeIndex);
+            const checkedPokemon = pokemonCollection.find(item => item === pokemonIndex);
 
             if (!checkedPokemon) {
-                collectPokemon.push(pokeIndex);
+              pokemonCollection.push(pokemonIndex);
             }
 
 
-            let addPokemon = document.querySelector(`[data-pokemon-index="${pokeIndex}"]`);
-            document.querySelector(`[data-pokeIcon-id="${questIndex}"]`).src = "./img/captured.svg";
-            document.querySelector(`[data-timer-id="${questIndex}"]`).innerHTML = "Success";
+            // let addPokemon = document.querySelector(`[data-pokemon-index="${questionId}"]`);
+            // document.querySelector(`[data-pokeIcon-id="${questIndex}"]`).src = "./img/captured.svg";
+            // document.querySelector(`[data-timer-id="${questIndex}"]`).innerHTML = "Success";
 
-            addPokemon.classList.remove("deactivate");
-            addPokemon.classList.add("colured");
+            // addPokemon.classList.remove("deactivate");
+            // addPokemon.classList.add("colured");
 
             questionModal.hide();
         }
         else {
             console.log("Wrong Answer");
 
-            questionItem[currentId].classList.remove("correct");
-            questionItem[currentId].classList.add("wrong");
-            pokemonIcon[currentId].src = "./img/wrong.png";
-            questionStatus[currentId].innerHTML = `<img src="./img/wrong-status.png" class="img-fluid">`;
+            // questionItem[questionId].classList.remove("correct");
+            // questionItem[questionId].classList.add("wrong");
+            // pokemonIcon[questionId].src = "./img/wrong.png";
+            // questionStatus[currentId].innerHTML = `<img src="./img/wrong-status.png" class="img-fluid">`;
 
-            userGeneratedData[currentId].status = "wrong";
-            answerStatus = "wrong";
+            // userGeneratedData[currentId].status = "wrong";
+            // answerStatus = "wrong";
 
+            status="wrong";
             questionModal.hide();
         }
+
+        showAnswer(timer,status,answer,questionId);
 
 
         ///update the localStorage for userAnswer;
@@ -491,18 +517,18 @@ function checkAnswer(answer,userInput)
 
 
         
-            const checkedQuestion = userAnswer.find(item => item.questionId === questIndex);
+            // const checkedQuestion = userAnswer.find(item => item.questionId === questIndex);
 
-            if (checkedQuestion) {
-                checkedQuestion.status = answerStatus;
-                checkedQuestion.answer = userinput;
+            // if (checkedQuestion) {
+            //     checkedQuestion.status = answerStatus;
+            //     checkedQuestion.answer = userinput;
 
-            }
-            else {
-                userAnswer.push({ "questionId": questIndex, "pokemonID": pokeIndex, "answer":userinput, status: answerStatus });
-            }
+            // }
+            // else {
+            //     userAnswer.push({ "questionId": questIndex, "pokemonID": pokeIndex, "answer":userinput, status: answerStatus });
+            // }
 
-            saveLocalStorage();
+            // saveLocalStorage();
 
 
 
