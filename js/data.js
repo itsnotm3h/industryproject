@@ -389,6 +389,7 @@ function setDisplayTime(x) {
 }
 
 function setTimer(timer, index) {
+  
 
   let miliSec = userGeneratedData[index].timer;
   let questionStatus = document.querySelectorAll(".status");
