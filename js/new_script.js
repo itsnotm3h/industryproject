@@ -24,9 +24,9 @@ function loadPreset(question) {
         if (status == "") {
             questionContainer.classList.add('deactivate');
         }
-
-        if (status == "redo") {
-
+        if(status=="redo")
+        { 
+            questionContainer.classList.remove('deactivate');
         }
 
         if (status == "correct" || status == "wrong") {
@@ -42,7 +42,6 @@ function loadPreset(question) {
     })
 
     addClick("questionItem");
-
 }
 
 function loadGallery(x) {
@@ -78,8 +77,7 @@ function loadGallery(x) {
             const pokmonCont = document.createElement("div");
             pokmonCont.classList.add('pokemonGallery', 'flex-fill', 'deactivate');
 
-            pokmonCont.dataset.pokemonIndex = x[j].pokemonId;
-
+            pokmonCont.dataset.pokemonIndex = (x[j].pokemonId);
             pokmonCont.innerHTML = `<img src="${x[j].pokemonImage}"  class="img-fluid" >`;
             wrapper.appendChild(pokmonCont);
         }
@@ -90,9 +88,175 @@ function loadGallery(x) {
 
 }
 
+function showNotification(event,count) {
+    const submitYes = document.querySelector(".submitYes");
+
+    var notificationModal = new bootstrap.Modal(document.getElementById('notification'), {
+        keyboard: false
+    });
+
+    document.querySelector(".submitNo").style.display = "block";
+
+
+    let title = "";
+    let message = "";
+
+    if (event == "newQuestion") {
+        title = "New Questions Detected!";
+        message = "Do you wish to proceed to refresh the question? You will lose your progress so far."
+
+    }
+
+    if (event == "redo") {
+
+
+        title = "You have complete the quiz";
+        message = `Your score:${count} <br/> Please click yes to redo the wrong question and no to reveal the correct answer.`
+    }
+
+    if (event == "reGenerate") {
+        title = "You have complete the quiz";
+        message = `Your score:${count} <br/> Please click yes to restart.`
+        document.querySelector(".submitNo").style.display = "none";
+    }
+
+
+    document.querySelector(".notificationTitle").innerHTML = title;
+    document.querySelector(".notificationText").innerHTML = message;
+
+    notificationModal.show();
+
+
+    submitYes.addEventListener("click", function () {
+
+        gameStatus=event;
 
 
 
+
+        if (event == "reGenerate" || event == "newQuestion") {
+
+            location.reload();
+            notificationModal.hide();
+
+        }
+
+        if (event == "LoadSave") {
+            
+            location.reload();
+            notificationModal.hide();
+
+        }
+
+        if (event == "redo") {
+
+            console.log("redo");
+
+            for (let item in generatedData) {
+
+                if (generatedData[item].status == "wrong") {
+                    let questionId = generatedData[item].questionId;
+
+                    generatedData[item].status = "redo";
+                    generatedData[item].timer.current = generatedData[item].timer.duration;
+
+                    let markerTimer = setDisplayTime(generatedData[item].timer.current);
+
+
+                    document.querySelector(`[data-pokeIcon-id=${questionId}]`).src=generatedData[item].pokemon.imageURL;
+                    
+
+                    document.querySelector(`[data-timer-id=${questionId}]`).innerHTML=markerTimer;
+
+
+                    markerTimers[questionId] = null; 
+                }
+            }
+            
+            document.querySelector(".explainSection").classList.add("hidden");
+            loadPreset(generatedData);
+            notificationModal.hide();
+  
+
+        }
+
+    })
+
+
+    document.querySelector(".submitNo").addEventListener("click", function () {
+        document.querySelector(".explainSection").classList.remove("hidden");
+        notificationModal.hide(); 
+
+        gameStatus="reviewAnswer";
+
+    })
+
+
+}
+
+
+function quizCheck() {
+
+    try {
+
+        let correct = 0;
+        let wrong = 0;
+        let redo = 0;
+        let questionLeft = 0;
+
+
+        for (let item in generatedData) {
+            if (generatedData[item].status == "correct") {
+                correct++;
+            }
+            else if (generatedData[item].status == "wrong") {
+                wrong++;
+            }
+            else if (generatedData[item].status == "redo") {
+                redo++;
+            }
+            else {
+                questionLeft++;
+            }
+        }
+
+        console.log("correct:" + correct);
+        console.log("wrong:" + wrong);
+        console.log("Redo:" + redo);
+        console.log("questionLeft:" + questionLeft);
+
+        if(questionLeft == 0 && redo == 0)
+        {
+            if(correct == 10)
+            {
+                showNotification("reGenerate",correct);
+            }
+            else if(wrong !=0)
+            {
+                showNotification("redo",correct);
+            }
+        }
+
+    }
+    catch (e) {
+        console.log(e);
+    }
+
+
+}
+
+function showSavedGallery(x) {
+
+    for (let pokemon in x) {
+        let pokeId = x[pokemon];
+        let addPokemon = document.querySelector(`[data-pokemon-index="${pokeId}"]`);
+
+        addPokemon.classList.remove("deactivate");
+        addPokemon.classList.add("colured");
+
+    }
+
+}
 
 
 
@@ -101,14 +265,18 @@ function app() {
 
     // function to load data
     document.addEventListener("DOMContentLoaded", async function () {
+        gameData = await loadGameData();
+        console.log(gameData);
         await loadAllData();
-
         await getLocation(function (coords) {
             sgLat = coords[0];
             sgLng = coords[1];
         });
 
+    
+
     });
+
 
     document.querySelector(".sidebar").addEventListener("click", function (e) {
 
@@ -121,16 +289,29 @@ function app() {
             document.querySelector("#map").classList.remove("hidden");
             document.querySelector("#gallery").classList.add("hidden");
         }
-    
+
         if (e.target.id == "saveButton") {
             // showSavedGallery(localGallery);
             // saveLocalStorage();
-            alert("You have saved.");
+            
+            let alphabet = ["a","b","c","e","f","g","h","i","j","k","l","n","m"];
+            let randomNumber = Math.floor(Math.random() * (100 - 1 + 1)) + 1;
+
+                gameId = alphabet[ (Math.floor(Math.random() * (alphabet.length-1 - 0 + 1)) + 0)]+ randomNumber + alphabet[ Math.floor(Math.random() * (alphabet.length-1 - 0 + 1)) + 0] + randomNumber
+       
+            
+            gameData.session[gameId] = {
+                "question": generatedData,
+                "PokemonGallery": pokemonCollection,
+                "GameStatus": gameStatus
+            };
+
+            localStorage.setItem("progress", gameId);
+            saveGameData(gameData);
+    
         }
-    
-    
     })
-    
+
     document.getElementById('carouselExample').addEventListener('slid.bs.carousel', function (event) {
         const slideNumber = event.to + 1; // `event.to` gives the zero-based index
         document.querySelector("#boxName").innerHTML = `BOX ${slideNumber}`;
@@ -150,15 +331,13 @@ function app() {
         }
         else {
             document.querySelector(".error-answer").style.display = "none";
-            checkAnswer(entry,userInput);
+            checkAnswer(entry, userInput);
         }
     }
     );
-
-
-
 };
 
 app();
+
 
 

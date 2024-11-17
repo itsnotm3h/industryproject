@@ -2,6 +2,8 @@ let POKEMONURL = "https://pokeapi.co/api/v2/pokemon/";
 let GEOJSON = "geojson/GreenMarkBuildingsGEOJSON.geojson";
 const JSON_BIN_BASE_URL = "https://api.jsonbin.io/v3";
 const JSON_BIN_ID = "67263111acd3cb34a8a14d55";
+const JSON_BIN_GAME_ID = "673a3076e41b4d34e455dc60";
+
 
 // This is to load all the data from the pokemon library.
 
@@ -9,6 +11,10 @@ let pokemonLimit = 300;
 let pokemonLibrary = [];
 let geoLibrary = [];
 let questionLibrary = [];
+let pokemonCollection = [];
+let gameStatus = "";
+let gameData = [];
+let gameId="";
 
 //map setting
 let map;
@@ -16,6 +22,16 @@ let sgLat = 1.290270;
 let sgLng = 103.851959;
 let pokemonMarker;
 const markerTimers = {};
+
+//Game Setting
+
+let questionLimit = 10;
+let timerSetting = [5, 6, 7, 8];
+let previousIndex = 0;
+let generatedData = [];
+// let timerSetting = [0.1, 0.1, 0.1, 0.1];
+let currentIndex;
+let sessionID = localStorage.getItem("progress");
 
 var questionModal = new bootstrap.Modal(document.getElementById('myModal'), {
   keyboard: false
@@ -132,13 +148,6 @@ async function createPokemonLibrary() {
 
 //Load/Generate question Data
 
-let questionLimit = 10;
-// let timerSetting = [5, 6, 7, 8];
-let previousIndex = 0;
-let generatedData = [];
-let pokemonCollection =[];
-let timerSetting = [0.1, 0.1, 0.1, 0.1];
-let currentIndex;
 
 
 //1. load question from jsonbin
@@ -197,7 +206,7 @@ function generateQuestions(question, coordinates, pokemon) {
 
     let latLng = coordinates[coordinateIndex].geometry.coordinates;
 
-    generatedData.push({ "questionId": questionId, "question": questionText, "answer": questionAnswer, "level": level, "userAnswer":"", "status": "", "timer": { "duration": timer, "current": timer }, pokemon: { "index": pokemonIndex, "coordinates": latLng, "imageURL": pokemon[pokemonIndex - 1].pokemonImage } });
+    generatedData.push({ "questionId": questionId, "question": questionText, "answer": questionAnswer, "level": level, "userAnswer": "", "status": "", "timer": { "duration": timer, "current": timer }, pokemon: { "index": pokemonIndex, "coordinates": latLng, "imageURL": pokemon[pokemonIndex - 1].pokemonImage } });
 
   }
   // return checkIndex;
@@ -215,6 +224,11 @@ async function loadAllData() {
     pokemonLibrary = pokemonLibrary.sort((a, b) => a.key - b.key);
     generateQuestions(questionLibrary, geoLibrary, pokemonLibrary);
     loadGallery(pokemonLibrary);
+    if(sessionID)
+    {
+      generatedData = gameData.session[sessionID].question;
+
+    }
     loadPreset(generatedData);
   }
 
@@ -238,6 +252,7 @@ function addMarker(x, lat, lng) {
       let markerQuestionId = element.questionId;
       let markerIMG = element.pokemon.imageURL;
       let markerTimer = setDisplayTime(element.timer.current);
+      let markerStatus = element.status;
 
       if (index == 0) {
         newlat = lat;
@@ -245,7 +260,18 @@ function addMarker(x, lat, lng) {
 
         generatedData[0].pokemon.coordinates[1] = lat;
         generatedData[0].pokemon.coordinates[0] = lng;
+      }
 
+      if(markerStatus == "correct")
+      {
+        // markerIMG = "./img/captured.png";
+        markerTimer = "Success";
+
+      }
+      if(markerStatus == "wrong")
+      {
+        // markerIMG = "./img/empty.png";
+        markerTimer = "Failed";
       }
 
       let customDivIcon = L.divIcon({
@@ -257,6 +283,7 @@ function addMarker(x, lat, lng) {
 
       pokemonMarker = new L.marker([newlat, newlng], { icon: customDivIcon });
       pokemonMarker.addTo(map);
+      removeExisting();
 
     });
 
@@ -266,7 +293,6 @@ function addMarker(x, lat, lng) {
     console.log(error);
 
   }
-
 
 }
 
@@ -284,77 +310,55 @@ function currentIndicator(questionID) {
 
   allIndicator.forEach((element) => {
 
-      if (element.dataset.arrowId == questionID) {
-          element.classList.remove("hidden");
-      }
-      if (element.dataset.arrowId != questionID) {
-          element.classList.add("hidden");
-      }
+    if (element.dataset.arrowId == questionID) {
+      element.classList.remove("hidden");
+    }
+    if (element.dataset.arrowId != questionID) {
+      element.classList.add("hidden");
+    }
   });
 
   allQuestionItem.forEach((question) => {
 
-      if (question.dataset.questionId == questionID) {
-          question.classList.add("currentQuestion");
-      }
-      if (question.dataset.questionId != questionID) {
-          question.classList.remove("currentQuestion");
-      }
+    if (question.dataset.questionId == questionID) {
+      question.classList.add("currentQuestion");
+    }
+    if (question.dataset.questionId != questionID) {
+      question.classList.remove("currentQuestion");
+    }
   });
 }
 
 
-function showAnswer(time,status,answer,id){
+function showCorrectAnswer(target) {
   let currentAnswer = document.querySelector(".answerInput");
-  let questionItem = document.querySelector(`[data-question-id="${id}"]`);
-  let questionIcon = document.querySelector(`[data-question-icon="${id}"]`);
-  let questionStatus = document.querySelector(`[data-questionitem-status="${id}"]`);
-  let pokemonIcon = document.querySelector(`[data-pokeIcon-id="${id}"]`)
-  let timer = document.querySelector(`[data-timer-id="${id}"]`);
+  let status = target.status;
+  let time = target.timer.current;
+  let answer = target.answer;
 
 
-  if (status !="") {
-    
-    currentAnswer.value = getUserAnswer(id);  
+  if (status != "" && time <= 0) {
+
+    currentAnswer.value = getUserAnswer(currentIndex);
     document.querySelector(".icon").classList.remove("hidden");
     document.querySelector(".submitAnswer").classList.add("hidden");
     document.querySelector(".answerInput").disabled = true;
     document.querySelector(".correctAnswer").innerHTML = answer;
-    // document.querySelector(".explainSection").classList.remove("hidden");
- 
+
 
     //remove hidden class from
-    if (status=="correct") {
-
-      questionItem.classList.add("correct");
-      questionItem.classList.remove("wrong");
-      questionIcon.src="./img/correct.png";
+    if (status == "correct") {
       document.querySelector(".answerIcon").src = "./img/icon_correct.svg";
-      questionStatus.innerHTML = `<img src="./img/correct-status.png" class="img-fluid">`;
-      pokemonIcon.src = "./img/captured.svg";
-      timer.innerHTML = "Success";
-
-
-
-      document.querySelector(".explainSection").classList.add("hidden");
     }
 
-    else if (status=="wrong") {
-
-      console.log("wrong detected");
-      questionIcon.src = "./img/icon_wrong.svg";
-      questionStatus.innerHTML = `<img src="./img/wrong-status.png" class="img-fluid">`;
-      questionItem.classList.add("wrong");
-      questionIcon.src="./img/wrong.png";
-      pokemonIcon.src = "./img/empty.svg";
-      timer.innerHTML = "Failed";
+    if (status == "wrong") {
+      document.querySelector(".answerIcon").src = "./img/icon_wrong.svg";
     }
-
   }
+
   else {
     currentAnswer.value = "";
     document.querySelector(".answerInput").disabled = false;
-    document.querySelector(".explainSection").classList.add("hidden");
     document.querySelector(".icon").classList.add("hidden");
     document.querySelector(".submitAnswer").classList.remove("hidden");
   }
@@ -372,11 +376,8 @@ function addClick(item) {
       marker.addEventListener("click", function () {
         let questionId = this.dataset.markerId;
         let target = generatedData.find(item => item.questionId === questionId);
-
         let question = target.question;
-        let answer = target.answer;
-        let status = target.status;
-        let time = target.timer.current;
+
 
         document.querySelector(".modal-title").innerHTML = "Question:";
         document.querySelector(".question").innerHTML = `<p>${question}</p>`;
@@ -385,10 +386,10 @@ function addClick(item) {
 
         currentIndicator(questionId);
         scrollQuestion(questionId);
-        // showAnswer(time,status,answer,questionId);
-  
-  
-       
+        showCorrectAnswer(target);
+
+
+
         function clearAllIntervalsExceptCurrent(questionId) {
           for (let index in markerTimers) {
             if (index != questionId && markerTimers[index]) {
@@ -399,15 +400,15 @@ function addClick(item) {
         }
 
         //save timer in map so that we can stop the interval when they answer correct. I have use the index id as the key to retrieving the timer. 
-        if (!markerTimers[questionId]) {
-  
+        if (!markerTimers[questionId] && target.status!="correct" && target.status!="wrong") {
+
           clearAllIntervalsExceptCurrent(questionId);
           // Start a new timer for this marker
           markerTimers[questionId] = setInterval(() => {
             setTimer(target, questionId);
           }, 1000);
         }
-  
+
         let showQuestion = document.querySelector(`[data-question-id=${questionId}]`);
         showQuestion.classList.remove("deactivate");
       })
@@ -438,136 +439,71 @@ function getUserAnswer(x) {
   let target = generatedData.find(item => item.questionId === x);
   let answer = target.userAnswer;
 
-  if(!answer)
-  {
+  console.log(target);
+
+  if (!answer) {
     return "blank";
   }
-  else{
+  else {
     return answer;
   }
 }
 
-function checkAnswer(target,userInput)
-{
+
+function checkAnswer(target, userInput) {
+
   let answer = target.answer;
-  target.userAnswer = userInput;
   let pokemonIndex = target.pokemon.index;
-  let questionId = target.questionId;
-  let timer = target.timer.current;
-  let status = target.status;
+  let questionItem = document.querySelector(`[data-question-id="${currentIndex}"]`);
+  let pokemonIcon = document.querySelector(`[data-pokeicon-id="${currentIndex}"]`)
+  let timer = document.querySelector(`[data-timer-id="${currentIndex}"]`);
+  let questionIcon = document.querySelector(`[data-question-icon="${currentIndex}"]`);
+  let questionStatus = document.querySelector(`[data-questionitem-status="${currentIndex}"]`);
 
-  console.log("user input: " + userInput);
-  console.log("correct answer: " + answer);
+  target.userAnswer = userInput;
+  let pokemonIconImg ="";
+  let timerHTML = "";
 
-  let questionItem = document.querySelector(`[data-question-id="${questionId}"]`);
+  if (userInput == answer) {
+    target.status = "correct";
+    questionItem.classList.add("correct");
+    questionItem.classList.remove("wrong");
+    pokemonIconImg ="captured";
+    timerHTML = "Success";
 
-
-
-
-        if(userInput == answer) {
-
-
-          questionItem.classList.add("correct");
-
-            let noticeTab = document.querySelector(".noticeTab");
-    
-            noticeTab.innerHTML = `<img src="./img/thumbsup.jpg" class="img-fluid>`;
-
-            noticeTab.classList.remove("hidden");
-            target.status="correct";
-            target.timer.current=0;
-
-
-            const checkedPokemon = pokemonCollection.find(item => item === pokemonIndex);
-
-            if (!checkedPokemon) {
-              pokemonCollection.push(pokemonIndex);
-            }
-
-
-            // let addPokemon = document.querySelector(`[data-pokemon-index="${questionId}"]`);
-            // document.querySelector(`[data-pokeIcon-id="${questIndex}"]`).src = "./img/captured.svg";
-            // document.querySelector(`[data-timer-id="${questIndex}"]`).innerHTML = "Success";
-
-            // addPokemon.classList.remove("deactivate");
-            // addPokemon.classList.add("colured");
-
-        }
-        else {
-            console.log("Wrong Answer");
-            questionItem.classList.add("wrong");
-
-
-            // questionItem[questionId].classList.remove("correct");
-            // questionItem[questionId].classList.add("wrong");
-            // pokemonIcon[questionId].src = "./img/wrong.png";
-            // questionStatus[currentId].innerHTML = `<img src="./img/wrong-status.png" class="img-fluid">`;
-
-            // userGeneratedData[currentId].status = "wrong";
-            // answerStatus = "wrong";
-
-            target.status="wrong";
-        }
-
-        console.log("checkAnswer status: "+ target.status);
-        console.log(target);
-
-        showAnswer(timer,status,answer,questionId);
-
-
-        ///update the localStorage for userAnswer;
-
-        // try {
-
-        //     let correct = 0;
-
-        //     for (let time in userGeneratedData) {
-        //         if (userGeneratedData[time].status == "correct") {
-        //             correct++;
-        //         }
-        //     }
-
-        //     let redo = 0;
-
-        //     for (let time in userGeneratedData) {
-        //         if (userGeneratedData[time].status == "redo") {
-        //             redo++;
-        //         }
-        //     }
-
-
-            
-        //     let wrong = 0;
-
-        //     for (let time in userGeneratedData) {
-        //         if (userGeneratedData[time].status == "wrong") {
-        //             wrong++;
-        //         }
-        //     }
-
-
-        //     if (userAnswer.length == 10) {
-        //         if (correct == 10 && redo == 0) {
-        //             showNotification("reGenerate");
-        //         }
-        //         else if (redo == 0 && wrong !=0) {
-        //             showNotification("redo");
-        //         }
-
-
-        //     }
-
-        // }
-        // catch (e) {
-        //     console.log(e);
-        // }
-
-
-        questionModal.hide();
-
-
+    let pokeCheck = pokemonCollection.find(item=>item == pokemonIndex);
+    if(!pokeCheck){
+      pokemonCollection.push(pokemonIndex);
     }
+  }
 
+  else {
+    target.status = "wrong";
+    questionItem.classList.add("wrong");
+    questionItem.classList.remove("correct");
+    pokemonIconImg ="empty";
+    timerHTML = "Failed";
+  }
+
+  target.timer.current = 0;
+  clearInterval(markerTimers[currentIndex]);
+
+  
+  questionStatus.innerHTML = `<img src="./img/${target.status}-status.png" class="img-fluid">`;
+    pokemonIcon.src = `./img/${pokemonIconImg}.svg`;
+    timer.innerHTML = `${timerHTML}`;
+  questionIcon.src = `./img/${target.status}.png`;
+
+  if(pokemonCollection.length != 0)
+  {
+    showSavedGallery(pokemonCollection);
+  }
+  showCorrectAnswer(target);
+  quizCheck();
+  questionModal.hide();
+
+
+}
 
 
 
@@ -586,13 +522,8 @@ function setDisplayTime(x) {
 function setTimer(target, index) {
 
   let miliSec = target.timer.current;
-  // let questionStatus = target.status;
-  // let pokemonIcon = document.querySelector(`[data-pokeIcon-id="${index}"]`)
   let timer = document.querySelector(`[data-timer-id="${index}"]`);
   let questionItem = document.querySelector(`[data-question-id="${index}"]`);
-  // let questionIcon = document.querySelector(`[data-question-icon="${index}"]`);
-
-  let questionStatus = document.querySelector(`[data-questionitem-status="${index}"]`)
 
   if (miliSec >= 0) {
     //how many milisecond in minutes ()
@@ -601,46 +532,73 @@ function setTimer(target, index) {
     if (seconds <= 9) {
       seconds = "0" + seconds;
     }
-    // console.log(thisTimer);
     timer.innerHTML = minutes + ":" + seconds;
     miliSec = miliSec - 1000;
     target.timer.current = miliSec;
 
     if (miliSec < 0) {
-      // check id the answer is already in and correct/ esle put it as wrong. 
-      // map.removeLayer(markerArray[index]);
-      let check = target.status;
-      console.log(check);
 
-
-      if (check == "wrong") {
+      let entry = generatedData.find(item => item.questionId == currentIndex);
+      let status = entry.status;
+      let userInput = entry.userAnswer;
+      console.log(userInput)
+        
+      if (status != "correct" ) {
         questionItem.classList.add("wrong");
-        questionItem.classList.remove("correct");
-
         target.timer.current = 0;
-        target.status = "wrong";
-
+        checkAnswer(target,userInput);
       }
-      else if(check == "correct"){
-        questionItem.classList.add("correct");
-        questionItem.classList.remove("wrong");
-
-        timer.innerHTML = "Success";
-        target.status = "correct";
-        target.timer.current = 0;
-      }
-
-      // this is correct;
-      showAnswer(miliSec,target.status,target.answer,index);
+      showCorrectAnswer(entry);
       clearInterval(markerTimers[index]);
-
     }
   }
 
 }
 
 
+async function loadGameData() {
 
+  let response = await axios.get(`${JSON_BIN_BASE_URL}/b/${JSON_BIN_GAME_ID}/latest`);
+  
+  return response.data.record;
+}
+
+
+
+async function saveGameData(object) {
+  const response = await axios.put(`${JSON_BIN_BASE_URL}/b/${JSON_BIN_GAME_ID}`, object);
+
+}
+
+
+
+function removeExisting()
+{
+
+  for(let item in generatedData)
+  {
+    let index = generatedData[item].questionId;
+    let IMG="";
+
+
+    if(generatedData[item].status=="correct")
+    {
+      IMG="captured";
+      document.querySelector(`[data-pokeIcon-id=${index}]`).src=`/img/${IMG}.png`
+
+    }
+    if(generatedData[item].status=="wrong")
+      {
+      IMG="empty";
+      document.querySelector(`[data-pokeIcon-id=${index}]`).src=`/img/${IMG}.png`
+
+    }
+    
+
+  }
+ 
+
+}
 
 
 

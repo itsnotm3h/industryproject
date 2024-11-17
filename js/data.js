@@ -140,53 +140,53 @@ var questionModal = new bootstrap.Modal(document.getElementById('myModal'), {
 // }
 
 
-var map;
-let sgLat = 1.290270;
-let sgLng = 103.851959;
+// var map;
+// let sgLat = 1.290270;
+// let sgLng = 103.851959;
 
-let pokemonMarker;
-let markerArray = [];
-let timerInterval;
-const markerTimers = {};
-let selectedLeaftletId;
+// let pokemonMarker;
+// let markerArray = [];
+// let timerInterval;
+// const markerTimers = {};
+// let selectedLeaftletId;
 
 
-//Loading the Pokemon Data + Generating marker. 
+// //Loading the Pokemon Data + Generating marker. 
 
-//detect the location.
-function getLocation() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(function (position) {
-      let lat = position.coords.latitude;
-      let lng = position.coords.longitude;
-      loadMap(lat, lng);
-    }, showError);
-  } else {
-    console.log("Geolocation is not supported by this browser.");
-  }
-}
+// //detect the location.
+// function getLocation() {
+//   if (navigator.geolocation) {
+//     navigator.geolocation.getCurrentPosition(function (position) {
+//       let lat = position.coords.latitude;
+//       let lng = position.coords.longitude;
+//       loadMap(lat, lng);
+//     }, showError);
+//   } else {
+//     console.log("Geolocation is not supported by this browser.");
+//   }
+// }
 
-// this is a default from HTML api.
-function showError(error) {
-  switch (error.code) {
-    case error.PERMISSION_DENIED:
-      console.log("User denied the request for Geolocation.");
-      // this is to generate the map even if the user doesnt allow geolocation.
-      loadMap(sgLat, sgLng);
-      break;
-    case error.POSITION_UNAVAILABLE:
-      console.log("Location information is unavailable.");
-      // this is to generate the map even if the user doesnt allow geolocation.
-      loadMap(sgLat, sgLng);
-      break;
-    case error.TIMEOUT:
-      console.log("The request to get user location timed out.");
-      break;
-    case error.UNKNOWN_ERROR:
-      console.log("An unknown error occurred.");
-      break;
-  }
-}
+// // this is a default from HTML api.
+// function showError(error) {
+//   switch (error.code) {
+//     case error.PERMISSION_DENIED:
+//       console.log("User denied the request for Geolocation.");
+//       // this is to generate the map even if the user doesnt allow geolocation.
+//       loadMap(sgLat, sgLng);
+//       break;
+//     case error.POSITION_UNAVAILABLE:
+//       console.log("Location information is unavailable.");
+//       // this is to generate the map even if the user doesnt allow geolocation.
+//       loadMap(sgLat, sgLng);
+//       break;
+//     case error.TIMEOUT:
+//       console.log("The request to get user location timed out.");
+//       break;
+//     case error.UNKNOWN_ERROR:
+//       console.log("An unknown error occurred.");
+//       break;
+//   }
+// }
 
 
 //loadMap 
@@ -280,10 +280,6 @@ function showError(error) {
         document.querySelector(".submitAnswer").classList.remove("hidden");
       }
 
-
-
-
-
       document.querySelector(".modal-title").innerHTML = "Question:";
       document.querySelector(".question").innerHTML = `<p>${question}</p>`;
 
@@ -326,19 +322,19 @@ function showError(error) {
 };
 
 
-function getUserAnswer(x) {
+// function getUserAnswer(x) {
 
-  let localAnswer = JSON.parse(localStorage.getItem("userAnswer"));
+//   let localAnswer = JSON.parse(localStorage.getItem("userAnswer"));
 
-  // console.log(x);
+//   // console.log(x);
 
-  for (let item in localAnswer) {
-    if (localAnswer[item].questionId == x) {
-      // console.log(localAnswer[item]);
-      return localAnswer[item].answer;
-    }
-  }
-}
+//   for (let item in localAnswer) {
+//     if (localAnswer[item].questionId == x) {
+//       // console.log(localAnswer[item]);
+//       return localAnswer[item].answer;
+//     }
+//   }
+// }
 
 function removeCorrect(x) {
   //get the index of the question
