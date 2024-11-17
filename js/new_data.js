@@ -587,13 +587,13 @@ function removeExisting()
     if(generatedData[item].status=="correct")
     {
       IMG="captured";
-      document.querySelector(`[data-pokeIcon-id=${index}]`).src=`/img/${IMG}.svg`
+      document.querySelector(`[data-pokeIcon-id=${index}]`).src=`./img/${IMG}.svg`
 
     }
     else if(generatedData[item].status=="wrong")
       {
       IMG="empty";
-      document.querySelector(`[data-pokeIcon-id=${index}]`).src=`/img/${IMG}.svg`
+      document.querySelector(`[data-pokeIcon-id=${index}]`).src=`./img/${IMG}.svg`
 
     }
     
