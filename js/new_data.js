@@ -227,6 +227,7 @@ async function loadAllData() {
     if(sessionID)
     {
       generatedData = gameData.session[sessionID].question;
+      showSavedGallery(gameData.session[sessionID].PokemonGallery)
 
     }
     loadPreset(generatedData);
@@ -283,10 +284,11 @@ function addMarker(x, lat, lng) {
 
       pokemonMarker = new L.marker([newlat, newlng], { icon: customDivIcon });
       pokemonMarker.addTo(map);
-      removeExisting();
 
     });
 
+
+    removeExisting();
 
   }
   catch (error) {
@@ -466,6 +468,7 @@ function checkAnswer(target, userInput) {
 
   if (userInput == answer) {
     target.status = "correct";
+    console.log(generatedData)
     questionItem.classList.add("correct");
     questionItem.classList.remove("wrong");
     pokemonIconImg ="captured";
@@ -584,13 +587,13 @@ function removeExisting()
     if(generatedData[item].status=="correct")
     {
       IMG="captured";
-      document.querySelector(`[data-pokeIcon-id=${index}]`).src=`/img/${IMG}.png`
+      document.querySelector(`[data-pokeIcon-id=${index}]`).src=`/img/${IMG}.svg`
 
     }
-    if(generatedData[item].status=="wrong")
+    else if(generatedData[item].status=="wrong")
       {
       IMG="empty";
-      document.querySelector(`[data-pokeIcon-id=${index}]`).src=`/img/${IMG}.png`
+      document.querySelector(`[data-pokeIcon-id=${index}]`).src=`/img/${IMG}.svg`
 
     }
     

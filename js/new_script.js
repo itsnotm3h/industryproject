@@ -141,13 +141,6 @@ function showNotification(event,count) {
 
         }
 
-        if (event == "LoadSave") {
-            
-            location.reload();
-            notificationModal.hide();
-
-        }
-
         if (event == "redo") {
 
             console.log("redo");
@@ -266,7 +259,6 @@ function app() {
     // function to load data
     document.addEventListener("DOMContentLoaded", async function () {
         gameData = await loadGameData();
-        console.log(gameData);
         await loadAllData();
         await getLocation(function (coords) {
             sgLat = coords[0];
@@ -293,21 +285,34 @@ function app() {
         if (e.target.id == "saveButton") {
             // showSavedGallery(localGallery);
             // saveLocalStorage();
-            
-            let alphabet = ["a","b","c","e","f","g","h","i","j","k","l","n","m"];
-            let randomNumber = Math.floor(Math.random() * (100 - 1 + 1)) + 1;
+            if(!sessionID)
+            {
+                let alphabet = ["a","b","c","e","f","g","h","i","j","k","l","n","m"];
+                let randomNumber = Math.floor(Math.random() * (100 - 1 + 1)) + 1;
+    
+                    gameId = alphabet[ (Math.floor(Math.random() * (alphabet.length-1 - 0 + 1)) + 0)]+ randomNumber + alphabet[ Math.floor(Math.random() * (alphabet.length-1 - 0 + 1)) + 0] + randomNumber
+           
+                gameData.session[gameId] = {
+                    "question": generatedData,
+                    "PokemonGallery": pokemonCollection,
+                    "GameStatus": gameStatus
+                };
+    
+                localStorage.setItem("progress", gameId);
 
-                gameId = alphabet[ (Math.floor(Math.random() * (alphabet.length-1 - 0 + 1)) + 0)]+ randomNumber + alphabet[ Math.floor(Math.random() * (alphabet.length-1 - 0 + 1)) + 0] + randomNumber
-       
-            
-            gameData.session[gameId] = {
-                "question": generatedData,
-                "PokemonGallery": pokemonCollection,
-                "GameStatus": gameStatus
+            }
+            else{
+
+                gameData.session[sessionID].question = generatedData;
+                gameData.session[sessionID].PokemonGallery = pokemonCollection;
+                gameData.session[sessionID].gameStatus = pokemonCollection;
+
+
             };
 
-            localStorage.setItem("progress", gameId);
             saveGameData(gameData);
+            alert("You have saved your progress.");
+
     
         }
     })
