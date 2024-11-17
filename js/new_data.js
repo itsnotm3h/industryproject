@@ -313,22 +313,21 @@ function showAnswer(time,status,answer,id){
   let timer = document.querySelector(`[data-timer-id="${id}"]`);
 
 
-  if (status !="" && time <=0) {
+  if (status !="") {
     
     currentAnswer.value = getUserAnswer(id);  
     document.querySelector(".icon").classList.remove("hidden");
     document.querySelector(".submitAnswer").classList.add("hidden");
     document.querySelector(".answerInput").disabled = true;
     document.querySelector(".correctAnswer").innerHTML = answer;
-    document.querySelector(".explainSection").classList.remove("hidden");
-    console.log(status);
+    // document.querySelector(".explainSection").classList.remove("hidden");
  
 
     //remove hidden class from
     if (status=="correct") {
 
       questionItem.classList.add("correct");
-      questionItem.classList.remove("correct");
+      questionItem.classList.remove("wrong");
       questionIcon.src="./img/correct.png";
       document.querySelector(".answerIcon").src = "./img/icon_correct.svg";
       questionStatus.innerHTML = `<img src="./img/correct-status.png" class="img-fluid">`;
@@ -340,8 +339,10 @@ function showAnswer(time,status,answer,id){
       document.querySelector(".explainSection").classList.add("hidden");
     }
 
-    if (status=="wrong") {
-      document.querySelector(".answerIcon").src = "./img/icon_wrong.svg";
+    else if (status=="wrong") {
+
+      console.log("wrong detected");
+      questionIcon.src = "./img/icon_wrong.svg";
       questionStatus.innerHTML = `<img src="./img/wrong-status.png" class="img-fluid">`;
       questionItem.classList.add("wrong");
       questionIcon.src="./img/wrong.png";
@@ -384,7 +385,7 @@ function addClick(item) {
 
         currentIndicator(questionId);
         scrollQuestion(questionId);
-        showAnswer(time,status,answer,questionId);
+        // showAnswer(time,status,answer,questionId);
   
   
        
@@ -455,25 +456,26 @@ function checkAnswer(target,userInput)
   let timer = target.timer.current;
   let status = target.status;
 
+  console.log("user input: " + userInput);
+  console.log("correct answer: " + answer);
 
-  console.log(questionId)
+  let questionItem = document.querySelector(`[data-question-id="${questionId}"]`);
+
+
+
 
         if(userInput == answer) {
 
+
+          questionItem.classList.add("correct");
+
             let noticeTab = document.querySelector(".noticeTab");
     
-            // pokemonIcon[currentId].src = "./img/correct.png";
-            // questionStatus[currentId].innerHTML = `<img src="./img/correct-status.png" class="img-fluid">`;
-
             noticeTab.innerHTML = `<img src="./img/thumbsup.jpg" class="img-fluid>`;
 
             noticeTab.classList.remove("hidden");
-            status="correct";
+            target.status="correct";
             target.timer.current=0;
-            // userGeneratedData[currentId].status = "correct";
-            // userGeneratedData[currentId].timer = 0;
-
-            // answerStatus = "correct";
 
 
             const checkedPokemon = pokemonCollection.find(item => item === pokemonIndex);
@@ -490,10 +492,11 @@ function checkAnswer(target,userInput)
             // addPokemon.classList.remove("deactivate");
             // addPokemon.classList.add("colured");
 
-            questionModal.hide();
         }
         else {
             console.log("Wrong Answer");
+            questionItem.classList.add("wrong");
+
 
             // questionItem[questionId].classList.remove("correct");
             // questionItem[questionId].classList.add("wrong");
@@ -503,81 +506,64 @@ function checkAnswer(target,userInput)
             // userGeneratedData[currentId].status = "wrong";
             // answerStatus = "wrong";
 
-            status="wrong";
-            questionModal.hide();
+            target.status="wrong";
         }
+
+        console.log("checkAnswer status: "+ target.status);
+        console.log(target);
 
         showAnswer(timer,status,answer,questionId);
 
 
         ///update the localStorage for userAnswer;
 
-        try {
+        // try {
 
+        //     let correct = 0;
 
+        //     for (let time in userGeneratedData) {
+        //         if (userGeneratedData[time].status == "correct") {
+        //             correct++;
+        //         }
+        //     }
 
-        
-            // const checkedQuestion = userAnswer.find(item => item.questionId === questIndex);
+        //     let redo = 0;
 
-            // if (checkedQuestion) {
-            //     checkedQuestion.status = answerStatus;
-            //     checkedQuestion.answer = userinput;
-
-            // }
-            // else {
-            //     userAnswer.push({ "questionId": questIndex, "pokemonID": pokeIndex, "answer":userinput, status: answerStatus });
-            // }
-
-            // saveLocalStorage();
-
-
-
-            let correct = 0;
-
-            for (let time in userGeneratedData) {
-                if (userGeneratedData[time].status == "correct") {
-                    correct++;
-                }
-            }
-
-
-
-            let redo = 0;
-
-            for (let time in userGeneratedData) {
-                if (userGeneratedData[time].status == "redo") {
-                    redo++;
-                }
-            }
+        //     for (let time in userGeneratedData) {
+        //         if (userGeneratedData[time].status == "redo") {
+        //             redo++;
+        //         }
+        //     }
 
 
             
-            let wrong = 0;
+        //     let wrong = 0;
 
-            for (let time in userGeneratedData) {
-                if (userGeneratedData[time].status == "wrong") {
-                    wrong++;
-                }
-            }
-
-
-            if (userAnswer.length == 10) {
-                if (correct == 10 && redo == 0) {
-                    showNotification("reGenerate");
-                }
-                else if (redo == 0 && wrong !=0) {
-                    showNotification("redo");
-                }
+        //     for (let time in userGeneratedData) {
+        //         if (userGeneratedData[time].status == "wrong") {
+        //             wrong++;
+        //         }
+        //     }
 
 
-            }
+        //     if (userAnswer.length == 10) {
+        //         if (correct == 10 && redo == 0) {
+        //             showNotification("reGenerate");
+        //         }
+        //         else if (redo == 0 && wrong !=0) {
+        //             showNotification("redo");
+        //         }
 
-        }
-        catch (e) {
-            console.log(e);
-        }
+
+        //     }
+
+        // }
+        // catch (e) {
+        //     console.log(e);
+        // }
 
 
+        questionModal.hide();
 
 
     }
@@ -623,25 +609,30 @@ function setTimer(target, index) {
     if (miliSec < 0) {
       // check id the answer is already in and correct/ esle put it as wrong. 
       // map.removeLayer(markerArray[index]);
-      let check = questionItem.classList.contains("correct");
+      let check = target.status;
+      console.log(check);
 
 
-      if (!check) {
+      if (check == "wrong") {
         questionItem.classList.add("wrong");
+        questionItem.classList.remove("correct");
 
         target.timer.current = 0;
         target.status = "wrong";
 
       }
-      else {
+      else if(check == "correct"){
+        questionItem.classList.add("correct");
+        questionItem.classList.remove("wrong");
+
         timer.innerHTML = "Success";
         target.status = "correct";
         target.timer.current = 0;
       }
 
+      // this is correct;
       showAnswer(miliSec,target.status,target.answer,index);
       clearInterval(markerTimers[index]);
-      console.log(generatedData);
 
     }
   }

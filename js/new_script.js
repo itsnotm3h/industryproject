@@ -142,16 +142,16 @@ function app() {
 
         let entry = generatedData.find(item => item.questionId == currentIndex);
 
-        checkAnswer(entry,userInput);
-        // if (userinput == "") {
-        //     document.querySelector(".error-answer").classList.add("was-validated");
-        //     document.querySelector(".error-answer").innerHTML = "Field is empty";
-        //     document.querySelector(".error-answer").style.display = "block";
-        // }
-        // else {
-        //     document.querySelector(".error-answer").style.display = "none";
-        //     checkAnswer(answer);
-        // }
+
+        if (userInput == "") {
+            document.querySelector(".error-answer").classList.add("was-validated");
+            document.querySelector(".error-answer").innerHTML = "Field is empty";
+            document.querySelector(".error-answer").style.display = "block";
+        }
+        else {
+            document.querySelector(".error-answer").style.display = "none";
+            checkAnswer(entry,userInput);
+        }
     }
     );
 
