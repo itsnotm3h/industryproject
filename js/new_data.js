@@ -221,7 +221,7 @@ async function loadAllData() {
     await createPokemonLibrary();
     geoLibrary = await loadGeoLocation();
     questionLibrary = await loadQuestionData();
-    pokemonLibrary = pokemonLibrary.sort((a, b) => a.key - b.key);
+    // pokemonLibrary = pokemonLibrary.sort((a, b) => a.key - b.key);
     generateQuestions(questionLibrary, geoLibrary, pokemonLibrary);
     loadGallery(pokemonLibrary);
     if(sessionID)
